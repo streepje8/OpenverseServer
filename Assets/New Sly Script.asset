@@ -12,5 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3802eb236736546b2604a9fbf83989, type: 3}
   m_Name: New Sly Script
   m_EditorClassIdentifier: 
-  sourceCode: "sly CoolSly {\r\n\t\r\n\tvar meh = 0;\r\n\tvar mehmeh = \"\";\r\n\r\n\tfunction
-    runMeh() {\r\n\t\tSly.Log(\"MEH\");\r\n\t}\r\n\r\n}"
+  sourceCode: "sly CoolSly {\r\n\t\r\n\tint meh = 9;\r\n\tString mehmeh = \"Sly is
+    da best\";\r\n\r\n}"
+  compiledClass:
+    name: CoolSly{
+    variables:
+    - name: meh
+      type: 1
+      value: 0
+    - name: mehmeh
+      type: 0
+      value: Sly is cool

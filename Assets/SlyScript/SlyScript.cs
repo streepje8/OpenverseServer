@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -11,12 +12,7 @@ using UnityEngine;
 public class SlyScript : ScriptableObject
 {
     public string sourceCode;
-    private List<SlyVariable> variables = new List<SlyVariable>();
-
-    public List<SlyVariable> GetVariables()
-    {
-        return this.variables;
-    }
+    public SlyClass compiledClass = null;
 
     public enum CompileState
     {
@@ -27,7 +23,8 @@ public class SlyScript : ScriptableObject
         slyBody,
         typeDef,
         varibleAssignment,
-        parametersStart
+        parametersStart,
+        parameterDef
     }
 
     public enum CompilerScope
@@ -45,13 +42,16 @@ public class SlyScript : ScriptableObject
         CompileState state = CompileState.nothing;
         List<SlyVariable> prevariables = new List<SlyVariable>();
         List<SlyVariable> locals = new List<SlyVariable>();
+        List<SlyVariable> parameters = new List<SlyVariable>();
         string currentToken = "";
         string slyObjName = "";
-        SlyVariable.SlyObjectType currentType = SlyVariable.SlyObjectType.Undefined;
+        SlyObjectType currentType = SlyObjectType.TypeUndefined;
+        SlyObjectType parameterType = SlyObjectType.TypeUndefined;
         string fieldname = "";
         CompilerScope scope = CompilerScope.SlyObject;
         bool inString = false;
         char[] compileAbleCodeArray = compileAbleCode.ToCharArray();
+        string errorReason = "";
         for(int index = 0; index < compileAbleCodeArray.Length; index++)
         {
             char c = compileAbleCodeArray[index];
@@ -78,13 +78,19 @@ public class SlyScript : ScriptableObject
                 currentToken = "";
                 state = CompileState.slyBody;
             }
-            if(Enum.GetNames(typeof(SlyVariable.SlyObjectType)).Any(x => x.ToLower().Trim().Equals(currentToken.ToLower().Trim(), StringComparison.OrdinalIgnoreCase)) && state == CompileState.slyBody)
+            if (Enum.IsDefined(typeof(SlyObjectType), RemoveSpecialCharacters(("Type" + currentToken))) && state == CompileState.slyBody)
             {
-                currentType = (SlyVariable.SlyObjectType) Enum.Parse(typeof(SlyVariable.SlyObjectType),currentToken);
+                currentType = (SlyObjectType) Enum.Parse(typeof(SlyObjectType), RemoveSpecialCharacters(("Type" + currentToken)));
                 currentToken = "";
                 state = CompileState.typeDef;
             }
-            if(c.Equals('=') && state == CompileState.typeDef)
+            if (Enum.IsDefined(typeof(SlyObjectType), RemoveSpecialCharacters(("Type" + currentToken))) && state == CompileState.parametersStart)
+            {
+                parameterType = (SlyObjectType)Enum.Parse(typeof(SlyObjectType), RemoveSpecialCharacters(("Type" + currentToken)));
+                currentToken = "";
+                state = CompileState.parameterDef;
+            }
+            if (c.Equals('=') && state == CompileState.typeDef)
             {
                 fieldname = currentToken.Replace("=","");
                 currentToken = "";
@@ -94,6 +100,7 @@ public class SlyScript : ScriptableObject
             {
                 fieldname = currentToken;
                 currentToken = "";
+                parameters = new List<SlyVariable>();
                 state = CompileState.parametersStart;
                 scope = CompilerScope.Parameter;
             }
@@ -105,14 +112,19 @@ public class SlyScript : ScriptableObject
                         SlyVariable slyVar = new SlyVariable();
                         slyVar.name = fieldname;
                         slyVar.type = currentType;
-                        slyVar.value = currentToken.Replace(";","");
                         switch(scope)
                         {
                             case CompilerScope.Local:
+                                slyVar.value = currentToken.Replace(";", "");
                                 locals.Add(slyVar);
                                 break;
                             case CompilerScope.SlyObject:
+                                slyVar.value = currentToken.Replace(";", "");
                                 prevariables.Add(slyVar);
+                                break;
+                            case CompilerScope.Parameter:
+                                slyVar.name = currentToken.Replace(";", "");
+                                parameters.Add(slyVar);
                                 break;
                         }
                         currentToken = "";
@@ -133,23 +145,74 @@ public class SlyScript : ScriptableObject
                 break;
             }
         }
+        if(RemoveSpecialCharacters(currentToken).Length > 0)
+        {
+            state = CompileState.ERROR;
+            errorReason = "Trailing code found!";
+        }
         if(state == CompileState.ERROR)
         {
-
+            Debug.LogError("Error: " + errorReason);
+            Debug.LogWarning("Error is presumibly near: " + currentToken.Substring(0,Mathf.Clamp(currentToken.Length,0,10)));
         } else
         {
             state = CompileState.SUCCESS;
-            this.variables = prevariables;
-            
+            if (compiledClass == null)
+            {
+                compiledClass = new SlyClass();
+            }
+            compiledClass.name = slyObjName;
+            compiledClass.variables = prevariables;
         }
+        SlyManager.recompileAllExceptSelf(this);
+        EditorUtility.SetDirty(this);
+    }
+
+    public static string RemoveSpecialCharacters(string str)
+    {
+        return Regex.Replace(str, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
     }
 
 }
 
-class SlyObject
+[Serializable]
+public class SlyClass
 {
-    public SlyObject(string content)
+    public string name = "Undefined";
+    public List<SlyVariable> variables = new List<SlyVariable>();
+}
+
+[Serializable]
+public class SlyInstance
+{
+    public SlyClass type;
+    public List<SlyVariable> variables = new List<SlyVariable>();
+    public SlyInstance(SlyClass type)
     {
-        
+        this.type = type;
+        variables = type.variables;
+    }
+
+    public SlyInstance(SlyInstance copy)
+    {
+        type = copy.type;
+        variables = copy.variables;
+    }
+
+    public void recompile(SlyClass newType)
+    {
+        type = newType;
+        List<SlyVariable> oldvariables = variables;
+        variables = type.variables;
+        foreach (SlyVariable slyvar in type.variables)
+        {
+            foreach (SlyVariable oldvar in oldvariables)
+            {
+                if (oldvar.name.Equals(slyvar.name) && oldvar.type.Equals(slyvar.type))
+                {
+                    slyvar.value = oldvar.value;
+                }
+            }
+        }
     }
 }

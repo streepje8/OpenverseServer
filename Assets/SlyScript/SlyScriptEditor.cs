@@ -24,15 +24,13 @@ public class SlyScriptEditor : Editor
     public override void OnInspectorGUI()
     {
         SlyScript script = (SlyScript)target;
-        /*
-        if (GUILayout.Button("Reload Slyscript In Unity"))
+        if (GUILayout.Button("Recompile"))
         {
             string filepath = Path.GetFileName(AssetDatabase.GetAssetPath(script));
             LoadFile(filepath, script);
             script.Compile();
             EditorUtility.SetDirty(script);
         }
-        */
         GUILayout.Space(20);
         GUILayout.TextArea(script.sourceCode);
     }
@@ -76,6 +74,7 @@ public class SlyScriptEditor : Editor
     private static void OnFileChange(object sender, FileSystemEventArgs e)
     {
         recompileAllEdited();
+        SlyManager.recompileAll();
     }
 
     public static void PrepareFile(string filepath, SlyScript s)
