@@ -173,17 +173,23 @@ MonoBehaviour:
       variables:
       - name: meh
         type: 1
-        value: 0
+        value: 7
       - name: mehmeh
         type: 0
         value: Sly is cool
+      - name: muh
+        type: 1
+        value: 5
     variables:
     - name: meh
       type: 1
-      value: 0
+      value: 7
     - name: mehmeh
       type: 0
       value: Sly is cool
+    - name: muh
+      type: 1
+      value: 5
   runtimeInstance:
     type:
       name: Undefined
@@ -226,17 +232,23 @@ MonoBehaviour:
       variables:
       - name: meh
         type: 1
-        value: 0
+        value: 7
       - name: mehmeh
         type: 0
         value: Sly is cool
+      - name: muh
+        type: 1
+        value: 5
     variables:
     - name: meh
       type: 1
-      value: 0
+      value: 7
     - name: mehmeh
       type: 0
       value: Sly is cool
+    - name: muh
+      type: 1
+      value: 5
   runtimeInstance:
     type:
       name: Undefined

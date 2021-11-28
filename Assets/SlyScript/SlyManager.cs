@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-[ExecuteAlways]
 public class SlyManager : MonoBehaviour
 {
     private static List<SlyScriptComponent> scriptComponents = new List<SlyScriptComponent>();
@@ -25,20 +24,35 @@ public class SlyManager : MonoBehaviour
 
     public static void recompileAllExceptSelf(SlyScript self)
     {
-        foreach (SlyScriptComponent ssc in scriptComponents)
+        List<Scene> scenes = new List<Scene>();
+        for(int i = 0; i < SceneManager.sceneCountInBuildSettings; i++) {
+            scenes.Add(SceneManager.GetSceneByBuildIndex(i));
+        }
+        foreach(Scene scene in scenes)
         {
-            if (ssc.Script != null)
+            GameObject[] rootObjectsInScene = scene.GetRootGameObjects();
+            for (int i = 0; i < rootObjectsInScene.Length; i++)
             {
-                if(ssc.Script != self) { 
-                    ssc.Script.Compile();
-                }
-                if (ssc.instance == null)
+                SlyScriptComponent[] allComponents = rootObjectsInScene[i].GetComponentsInChildren<SlyScriptComponent>(true);
+                for (int j = 0; j < allComponents.Length; j++)
                 {
-                    ssc.instance = new SlyInstance(ssc.Script.compiledClass);
+                    SlyScriptComponent ssc = allComponents[j];
+                    if (ssc.Script != null)
+                    {
+                        if (ssc.Script != self)
+                        {
+                            ssc.Script.Compile();
+                        }
+                        if (ssc.instance == null)
+                        {
+                            ssc.instance = new SlyInstance(ssc.Script.compiledClass);
+                        }
+                        ssc.instance.recompile(ssc.Script.compiledClass);
+                    }
                 }
-                ssc.instance.recompile(ssc.Script.compiledClass);
             }
         }
+            
     }
 
     public static void registerScriptComponent(SlyScriptComponent ssc)

@@ -201,6 +201,7 @@ public class SlyInstance
 
     public void recompile(SlyClass newType)
     {
+        Debug.Log("Recompiled component");
         type = newType;
         List<SlyVariable> oldvariables = variables;
         variables = type.variables;

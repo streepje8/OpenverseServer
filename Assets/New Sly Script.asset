@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: New Sly Script
   m_EditorClassIdentifier: 
   sourceCode: "sly CoolSly {\r\n\t\r\n\tint meh = 9;\r\n\tString mehmeh = \"Sly is
-    da best\";\r\n\r\n}"
+    da best\";\r\n\tint muh = 5;\r\n\r\n}"
   compiledClass:
     name: CoolSly{
     variables:
     - name: meh
       type: 1
-      value: 0
+      value: 9
     - name: mehmeh
       type: 0
       value: Sly is cool
+    - name: muh
+      type: 1
+      value: 5

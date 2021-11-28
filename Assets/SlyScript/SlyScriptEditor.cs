@@ -30,6 +30,7 @@ public class SlyScriptEditor : Editor
             LoadFile(filepath, script);
             script.Compile();
             EditorUtility.SetDirty(script);
+            SlyManager.recompileAll();
         }
         GUILayout.Space(20);
         GUILayout.TextArea(script.sourceCode);

@@ -19,7 +19,8 @@ public class SlyScriptComponentEditor : Editor
     public override void OnInspectorGUI()
     {
         SlyScriptComponent script = (SlyScriptComponent)target;
-        if(script.Script == null)
+        SlyManager.registerScriptComponent(script);
+        if (script.Script == null)
         {
             EditorGUILayout.PropertyField(m_myScript);
             EditorGUILayout.LabelField("Please add a sly script here!");
@@ -61,21 +62,22 @@ public class SlyScriptComponentEditor : Editor
         if(instance != null) { 
             if (instance.variables != null)
             {
-                foreach (SlyVariable var in instance.variables)
+                for(int i = 0; i < instance.variables.Count; i++)
                 {
+                    SlyVariable var = instance.variables[i];
                     EditorGUILayout.LabelField(var.name);
                     switch (var.type)
                     {
                         case SlyObjectType.TypeString:
-                            var.value = EditorGUILayout.TextField(var.value);
+                            instance.variables[i].value = EditorGUILayout.TextField(instance.variables[i].value);
                             break;
                         case SlyObjectType.Typeint:
                             int value = 0;
-                            if (var.value.Length > 0)
+                            if (instance.variables[i].value.Length > 0)
                             {
-                                value = int.Parse(var.value);
+                                value = int.Parse(instance.variables[i].value);
                             }
-                            var.value = EditorGUILayout.IntField(value) + "";
+                            instance.variables[i].value = EditorGUILayout.IntField(value) + "";
                             break;
                         case SlyObjectType.TypeSlyObject:
                             EditorGUILayout.LabelField("Sly objects cant be edited in the inspector (yet), please make it private!");
