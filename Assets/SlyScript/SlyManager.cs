@@ -1,72 +1,84 @@
-using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SlyManager : MonoBehaviour
+namespace Sly
 {
-    private static List<SlyScriptComponent> scriptComponents = new List<SlyScriptComponent>();
-
-    public static void recompileAll()
+    [ExecuteAlways]
+    [InitializeOnLoad]
+    public class SlyManager : EditorWindow
     {
-        foreach(SlyScriptComponent ssc in scriptComponents)
-        {
-            if(ssc.Script != null) {
-                ssc.Script.Compile();
-                if (ssc.instance == null)
-                {
-                    ssc.instance = new SlyInstance(ssc.Script.compiledClass);
-                }
-                ssc.instance.recompile(ssc.Script.compiledClass);
-            } 
-        }
-    }
 
-    public static void recompileAllExceptSelf(SlyScript self)
-    {
-        List<Scene> scenes = new List<Scene>();
-        for(int i = 0; i < SceneManager.sceneCountInBuildSettings; i++) {
-            scenes.Add(SceneManager.GetSceneByBuildIndex(i));
-        }
-        foreach(Scene scene in scenes)
+        public static bool queueRecompileEdited = true;
+        private static EditorWindow window = null;
+
+        public static void recompileAll()
         {
-            GameObject[] rootObjectsInScene = scene.GetRootGameObjects();
-            for (int i = 0; i < rootObjectsInScene.Length; i++)
+            recompileAllExceptSelf(null);
+        }
+
+        [InitializeOnLoadMethod]
+        static void start()
+        {
+            if (window == null)
             {
-                SlyScriptComponent[] allComponents = rootObjectsInScene[i].GetComponentsInChildren<SlyScriptComponent>(true);
-                for (int j = 0; j < allComponents.Length; j++)
+                window = GetWindowWithRect(typeof(SlyManager), new Rect(0, 0, -10, -10));
+            }
+        }
+
+        void Update()
+        {
+            Rect r = position;
+            r.x = 10000;
+            r.y = 10000;
+            position = r;
+            if (queueRecompileEdited)
+            {
+                for (int i = 0; i < SlyFileTracker.currentlyBeeingEdited.Count; i++)
                 {
-                    SlyScriptComponent ssc = allComponents[j];
-                    if (ssc.Script != null)
+                    SlyScript script = SlyFileTracker.currentlyBeeingEdited[i];
+                    string filepath = SlyFileTracker.currentlyBeeingEditedPaths[i];
+                    SlyScriptEditor.LoadFile(filepath, script);
+                    EditorUtility.SetDirty(script);
+                }
+                SlyManager.recompileAll();
+                queueRecompileEdited = false;
+            }
+        }
+
+        public static void recompileAllExceptSelf(SlyScript self)
+        {
+            List<Scene> scenes = new List<Scene>();
+            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+            {
+                scenes.Add(SceneManager.GetSceneByBuildIndex(i));
+            }
+            foreach (Scene scene in scenes)
+            {
+                GameObject[] rootObjectsInScene = scene.GetRootGameObjects();
+                for (int i = 0; i < rootObjectsInScene.Length; i++)
+                {
+                    SlyScriptComponent[] allComponents = rootObjectsInScene[i].GetComponentsInChildren<SlyScriptComponent>(true);
+                    for (int j = 0; j < allComponents.Length; j++)
                     {
-                        if (ssc.Script != self)
+                        SlyScriptComponent ssc = allComponents[j];
+                        if (ssc.Script != null)
                         {
-                            ssc.Script.Compile();
+                            if (ssc.Script != self)
+                            {
+                                ssc.Script.Compile();
+                            }
+                            if (ssc.instance == null)
+                            {
+                                ssc.instance = new SlyInstance(ssc.Script.compiledClass);
+                            }
+                            ssc.instance.recompile(ssc.Script.compiledClass);
                         }
-                        if (ssc.instance == null)
-                        {
-                            ssc.instance = new SlyInstance(ssc.Script.compiledClass);
-                        }
-                        ssc.instance.recompile(ssc.Script.compiledClass);
                     }
                 }
             }
-        }
-            
-    }
 
-    public static void registerScriptComponent(SlyScriptComponent ssc)
-    {
-        if (!scriptComponents.Contains(ssc))
-        {
-            scriptComponents.Add(ssc);
-        }
-    }
-    public static void deregisterScriptComponent(SlyScriptComponent target)
-    {
-        if(scriptComponents.Contains(target))
-        {
-            scriptComponents.Remove(target);
         }
     }
 }

@@ -1,23 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-public class SlyScriptMenus : MonoBehaviour
+namespace Sly
 {
-    [MenuItem("SlyScript/Create Script")]
-    static void LogSelectedTransformName()
+    public class SlyScriptMenus : MonoBehaviour
     {
-        string path = AssetDatabase.GetAssetPath(Selection.activeObject);
-        if (path == "")
+        [MenuItem("SlyScript/Create Script")]
+        static void LogSelectedTransformName()
         {
-            path = "Assets";
+            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (path == "")
+            {
+                path = "Assets";
+            }
+            else if (Path.GetExtension(path) != "")
+            {
+                path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
+            }
+            AssetDatabase.CreateAsset(new SlyScript(), AssetDatabase.GenerateUniqueAssetPath(path + "/NewSlyScript.asset"));
         }
-        else if (Path.GetExtension(path) != "")
-        {
-            path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
-        }
-        AssetDatabase.CreateAsset(new SlyScript(), AssetDatabase.GenerateUniqueAssetPath(path + "/NewSlyScript.asset"));
     }
 }

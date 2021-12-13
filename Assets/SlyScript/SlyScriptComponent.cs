@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlyScriptComponent : MonoBehaviour
+namespace Sly
 {
-    public SlyScript Script = null;
-    public SlyInstance instance = null;
-    public SlyInstance runtimeInstance = null;
-    public bool hasCompiled = false;
-
-    private void Start()
+    public class SlyScriptComponent : MonoBehaviour
     {
-        runtimeInstance = new SlyInstance(instance);
+        public SlyScript Script = null;
+        public SlyInstance instance = null;
+        public SlyInstance runtimeInstance = null;
+        public bool hasCompiled = false;
+
+        private void Start()
+        {
+            runtimeInstance = new SlyInstance(instance);
+        }
     }
 }

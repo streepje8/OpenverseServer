@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class SlyFunction
+namespace Sly
 {
-    public string name = "undefined";
-    public SlyObjectType returntype = SlyObjectType.TypeUndefined;
+    [Serializable]
+    public class SlyFunction
+    {
+        public string name = "undefined";
+        public SlyObjectType returntype = SlyObjectType.TypeUndefined;
 
-    public List<SlyVariable> locals = new List<SlyVariable>();
+        public List<SlyVariable> locals = new List<SlyVariable>();
+        public SlyVariable[] parameters;
+    }
 }

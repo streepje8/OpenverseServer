@@ -169,32 +169,52 @@ MonoBehaviour:
   Script: {fileID: 11400000, guid: 45497df7e96d2a843a9d8dae2ff5966a, type: 2}
   instance:
     type:
-      name: CoolSly{
+      name: CoolSly
       variables:
       - name: meh
         type: 1
-        value: 7
+        value: 9
       - name: mehmeh
         type: 0
-        value: Sly is cool
-      - name: muh
+        value: Sly is da best
+      - name: nah
         type: 1
-        value: 5
+        value: 3
+      functions:
+      - name: Update
+        returntype: 3
+        locals:
+        - name: coolvar
+          type: 1
+          value: 7
+        parameters:
+        - name: deltaTime
+          type: 1
+          value: 
+        - name: anotherArg
+          type: 1
+          value: 
+        - name: finalarg
+          type: 0
+          value: 
     variables:
     - name: meh
       type: 1
-      value: 7
+      value: 9
     - name: mehmeh
       type: 0
-      value: Sly is cool
-    - name: muh
+      value: Sly is da best
+    - name: nah
       type: 1
-      value: 5
+      value: 3
+    functions: []
   runtimeInstance:
     type:
       name: Undefined
       variables: []
+      functions: []
     variables: []
+    functions: []
   hasCompiled: 1
 --- !u!1 &182964606
 GameObject:
@@ -228,32 +248,52 @@ MonoBehaviour:
   Script: {fileID: 11400000, guid: 45497df7e96d2a843a9d8dae2ff5966a, type: 2}
   instance:
     type:
-      name: CoolSly{
+      name: CoolSly
       variables:
       - name: meh
         type: 1
-        value: 7
+        value: 9
       - name: mehmeh
         type: 0
-        value: Sly is cool
-      - name: muh
+        value: Sly is da best
+      - name: nah
         type: 1
-        value: 5
+        value: 3
+      functions:
+      - name: Update
+        returntype: 3
+        locals:
+        - name: coolvar
+          type: 1
+          value: 7
+        parameters:
+        - name: deltaTime
+          type: 1
+          value: 
+        - name: anotherArg
+          type: 1
+          value: 
+        - name: finalarg
+          type: 0
+          value: 
     variables:
     - name: meh
       type: 1
-      value: 7
+      value: 9
     - name: mehmeh
       type: 0
-      value: Sly is cool
-    - name: muh
+      value: Sly is da best
+    - name: nah
       type: 1
-      value: 5
+      value: 3
+    functions: []
   runtimeInstance:
     type:
       name: Undefined
       variables: []
+      functions: []
     variables: []
+    functions: []
   hasCompiled: 1
 --- !u!4 &182964608
 Transform:
