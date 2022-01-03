@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: New Sly Script
   m_EditorClassIdentifier: 
   sourceCode: "sly CoolSly {\r\n\t\r\n\tint meh = 9;\r\n\tString mehmeh = \"Sly is
-    da best\";\r\n\tint nah = 3;\r\n\r\n\tvoid Update() {\r\n\t\tint coolvar = 7;\r\n\t}\r\n\r\n\tint
-    addNumbers(int a; int b) {\r\n\t\tString operation = \"a + b\";\r\n\t}\r\n\r\n}"
+    da best\";\r\n\tint nah = 3;\r\n\r\n\tvoid Update() {\r\n\t\tTranslate(2,\"MEH\",0$$$);\r\n\t}\r\n\r\n}"
   compiledClass:
     name: CoolSly
     variables:
@@ -29,22 +28,6 @@ MonoBehaviour:
       value: 3
     functions:
     - name: Update
-      returntype: 3
-      locals:
-      - name: coolvar
-        type: 1
-        value: 7
+      returntype: 4
+      locals: []
       parameters: []
-    - name: addNumbers
-      returntype: 1
-      locals:
-      - name: operation
-        type: 0
-        value: a + b
-      parameters:
-      - name: a
-        type: 1
-        value: 
-      - name: b
-        type: 1
-        value: 

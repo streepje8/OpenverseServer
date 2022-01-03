@@ -9,6 +9,7 @@ namespace Sly
     {
         TypeString,
         Typeint,
+        Typefloat,
         TypeSlyObject,
         Typevoid,
         TypeUndefined

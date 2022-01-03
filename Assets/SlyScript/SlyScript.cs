@@ -178,7 +178,9 @@ namespace Sly
                             currentToken = "";
                             break;
                         case CompileState.functionBody:
-
+                            SlyInvocation invocation = new SlyInvocation(currentToken.Replace(";", ""));
+                            currentFunction.invocations.Add(invocation);
+                            currentToken = "";
                             break;
                         default:
                             //Do literally nothing
