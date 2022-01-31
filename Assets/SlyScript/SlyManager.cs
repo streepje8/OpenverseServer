@@ -12,6 +12,7 @@ namespace Sly
 
         public static bool queueRecompileEdited = true;
         private static EditorWindow window = null;
+        public static SlyResolver resolver = new SlyResolver();
 
         public static void recompileAll()
         {

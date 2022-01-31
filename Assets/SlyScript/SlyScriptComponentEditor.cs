@@ -47,9 +47,11 @@ namespace Sly
                 }
                 if (Application.isPlaying)
                 {
-                    EditorGUILayout.LabelField("In playmode!");
+                    if (GUILayout.Button("Hot Reload Script"))
+                    {
+                        script.hotReload();
+                    }
                     drawInspectorFor(script.runtimeInstance);
-
                 }
                 else
                 {
@@ -74,12 +76,20 @@ namespace Sly
                                 instance.setVariable(i, EditorGUILayout.TextField(vars[i].name, vars[i].value));
                                 break;
                             case SlyObjectType.Typeint:
-                                int value = 0;
+                                int ivalue = 0;
                                 if (instance.variables[i].value.Length > 0)
                                 {
-                                    value = int.Parse(vars[i].value);
+                                    ivalue = int.Parse(vars[i].value);
                                 }
-                                instance.setVariable(i, EditorGUILayout.IntField(vars[i].name, value).ToString());
+                                instance.setVariable(i, EditorGUILayout.IntField(vars[i].name, ivalue).ToString());
+                                break;
+                            case SlyObjectType.Typefloat:
+                                float fvalue = 0;
+                                if (instance.variables[i].value.Length > 0)
+                                {
+                                    fvalue = float.Parse(vars[i].value);
+                                }
+                                instance.setVariable(i, EditorGUILayout.FloatField(vars[i].name, fvalue).ToString());
                                 break;
                             case SlyObjectType.TypeSlyObject:
                                 EditorGUILayout.LabelField(vars[i].name);

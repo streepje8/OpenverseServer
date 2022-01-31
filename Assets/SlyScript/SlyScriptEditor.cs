@@ -78,7 +78,7 @@ namespace Sly
             string text = s.sourceCode;
             Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\slyscript\\editCache\\");
             File.WriteAllText(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\slyscript\\editCache\\" + filepath.Replace(".asset", "") + ".sly", text);
-            Debug.Log("Sly has prepaired a file at :" + System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\slyscript\\editCache\\" + filepath.Replace(".asset", "") + ".sly");
+            Debug.Log("Sly has prepaired a file at: " + System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\slyscript\\editCache\\" + filepath.Replace(".asset", "") + ".sly");
 
         }
 

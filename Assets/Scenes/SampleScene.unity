@@ -123,99 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &26325374
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 26325375}
-  - component: {fileID: 26325376}
-  m_Layer: 0
-  m_Name: AnotherSlyObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &26325375
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 26325374}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &26325376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 26325374}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36079c27cc163294596597eae723198b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Script: {fileID: 11400000, guid: 45497df7e96d2a843a9d8dae2ff5966a, type: 2}
-  instance:
-    type:
-      name: CoolSly
-      variables:
-      - name: meh
-        type: 1
-        value: 9
-      - name: mehmeh
-        type: 0
-        value: Sly is da best
-      - name: nah
-        type: 1
-        value: 3
-      functions:
-      - name: Update
-        returntype: 3
-        locals:
-        - name: coolvar
-          type: 1
-          value: 7
-        parameters:
-        - name: deltaTime
-          type: 1
-          value: 
-        - name: anotherArg
-          type: 1
-          value: 
-        - name: finalarg
-          type: 0
-          value: 
-    variables:
-    - name: meh
-      type: 1
-      value: 9
-    - name: mehmeh
-      type: 0
-      value: Sly is da best
-    - name: nah
-      type: 1
-      value: 3
-    functions: []
-  runtimeInstance:
-    type:
-      name: Undefined
-      variables: []
-      functions: []
-    variables: []
-    functions: []
-  hasCompiled: 1
 --- !u!1 &182964606
 GameObject:
   m_ObjectHideFlags: 0
@@ -226,6 +133,8 @@ GameObject:
   m_Component:
   - component: {fileID: 182964608}
   - component: {fileID: 182964607}
+  - component: {fileID: 182964610}
+  - component: {fileID: 182964609}
   m_Layer: 0
   m_Name: SlyObject
   m_TagString: Untagged
@@ -251,41 +160,52 @@ MonoBehaviour:
       name: CoolSly
       variables:
       - name: meh
-        type: 1
-        value: 9
-      - name: mehmeh
-        type: 0
-        value: Sly is da best
-      - name: nah
-        type: 1
-        value: 3
+        type: 2
+        value: 69
       functions:
-      - name: Update
-        returntype: 3
-        locals:
-        - name: coolvar
-          type: 1
-          value: 7
+      - className: CoolSly
+        name: doRotation
+        returntype: 6
+        locals: []
         parameters:
-        - name: deltaTime
-          type: 1
+        - name: amount
+          type: 2
           value: 
-        - name: anotherArg
-          type: 1
-          value: 
-        - name: finalarg
-          type: 0
-          value: 
+        invocations:
+        - isSystemInvocation: 1
+          executionFunction: 
+          name: Rotate
+          Myparameters:
+          - name: 
+            value: amount
+            isVariable: 1
+            type: 4
+          - name: 
+            value: amount
+            isVariable: 1
+            type: 4
+          - name: 
+            value: amount
+            isVariable: 1
+            type: 4
+      - className: CoolSly
+        name: Update
+        returntype: 6
+        locals: []
+        parameters: []
+        invocations:
+        - isSystemInvocation: 0
+          executionFunction: CoolSly.doRotation
+          name: doRotation
+          Myparameters:
+          - name: amount
+            value: meh
+            isVariable: 1
+            type: 4
     variables:
     - name: meh
-      type: 1
-      value: 9
-    - name: mehmeh
-      type: 0
-      value: Sly is da best
-    - name: nah
-      type: 1
-      value: 3
+      type: 2
+      value: 69
     functions: []
   runtimeInstance:
     type:
@@ -309,6 +229,55 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &182964609
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182964606}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &182964610
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182964606}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

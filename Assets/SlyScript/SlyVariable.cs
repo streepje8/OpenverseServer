@@ -10,9 +10,11 @@ namespace Sly
         TypeString,
         Typeint,
         Typefloat,
+        Typedouble,
+        Typereference,
         TypeSlyObject,
         Typevoid,
-        TypeUndefined
+        TypeUndefined,
     }
 
     [Serializable]

@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Sly
 {
-
     [CreateAssetMenu(fileName = "NewSlyScript", menuName = "SlyScript/Sly Script", order = 1)]
     public class SlyScript : ScriptableObject
     {
@@ -59,7 +58,7 @@ namespace Sly
                 char c = compileAbleCodeArray[index];
                 if (c == '"')
                 {
-                    if (!currentToken.EndsWith("\\"))
+                    if (!currentToken.EndsWith("\\") && state != CompileState.functionBody)
                     {
                         inString = !inString;
                         c = (char)0;
@@ -79,7 +78,7 @@ namespace Sly
                 }
                 if (c.Equals('{') && state == CompileState.slyStart)
                 {
-                    slyObjName = currentToken.Replace(" ", "");
+                    slyObjName = currentToken.Replace(" ", "").Replace("{", "");
                     currentToken = "";
                     state = CompileState.slyBody;
                 }
@@ -143,7 +142,7 @@ namespace Sly
                         slyVar.name = currentToken.Replace(")", "");
                         parameters.Add(slyVar);
                     }
-                    currentFunction = new SlyFunction();
+                    currentFunction = new SlyFunction(slyObjName);
                     currentFunction.name = fieldname;
                     currentFunction.returntype = currentType;
                     state = CompileState.functionReady;
@@ -178,7 +177,21 @@ namespace Sly
                             currentToken = "";
                             break;
                         case CompileState.functionBody:
-                            SlyInvocation invocation = new SlyInvocation(currentToken.Replace(";", ""));
+
+                            bool foundFunctionLocally = false;
+                            string calledFunctionName = currentToken.Substring(0,currentToken.IndexOf('('));
+                            SlyInvocation invocation = null;
+                            foreach (SlyFunction func in functions)
+                            {
+                                if(func.name.Equals(Regex.Replace(calledFunctionName, @"[^\w., -]", "")))
+                                {
+                                    foundFunctionLocally = true;
+                                    invocation = new SlyInvocation(func, currentToken.Replace(";", ""));
+                                }
+                            }
+                            if(!foundFunctionLocally) { 
+                                invocation = new SlyInvocation(currentToken.Replace(";", ""));
+                            }
                             currentFunction.invocations.Add(invocation);
                             currentToken = "";
                             break;
@@ -209,12 +222,88 @@ namespace Sly
                 {
                     compiledClass = new SlyClass();
                 }
-                compiledClass.name = slyObjName.Replace("{", "");
+                compiledClass.name = slyObjName;
                 compiledClass.variables = prevariables;
                 compiledClass.functions = functions;
             }
             SlyManager.recompileAllExceptSelf(this);
+            SlyManager.resolver.Register(compiledClass);
             EditorUtility.SetDirty(this);
+        }
+
+        public static SlyParameter[] ToParameterArray(string[] contentArray)
+        {
+            SlyParameter[] result = new SlyParameter[contentArray.Length];
+            for(int i = 0; i < contentArray.Length; i++)
+            {
+                result[i] = parseParameter(contentArray[i]);
+            }
+            return result;
+        }
+
+        public static SlyParameter parseParameter(string content)
+        {
+            SlyObjectType type = parseType(content);
+            SlyParameter finalParameter = new SlyParameter(type, "", getParsedContentString(type, content));
+            if(type == SlyObjectType.Typereference)
+            {
+                finalParameter.isVariable = true;
+            }
+            return finalParameter;
+        }
+
+        public static string getParsedContentString(SlyObjectType type, string content)
+        {
+            switch(type)
+            {
+                case SlyObjectType.TypeString:
+                        return content.Substring(0, content.Length - 1);
+                case SlyObjectType.Typedouble:
+                    return content.ToLower().Replace("d", "");
+                case SlyObjectType.Typefloat:
+                    return content.ToLower().Replace("f", "");
+                case SlyObjectType.Typeint:
+                    return content;
+                case SlyObjectType.Typereference:
+                    return content;
+            }
+            return "null";
+        }
+
+        public static SlyObjectType parseType(string content)
+        {
+            if(content.StartsWith("\"") && content.EndsWith("\""))
+            {
+                return SlyObjectType.TypeString;
+            }
+            if (isDigits(content))
+            {
+                return SlyObjectType.Typeint;
+            }
+            if (isDigits(content.Substring(0,content.Length-1)))
+            {
+                if(content.ToLower().EndsWith("f")) { 
+                    return SlyObjectType.Typefloat;
+                }
+                if(content.ToLower().EndsWith("d"))
+                {
+                    return SlyObjectType.Typedouble;
+                }
+            }
+            return SlyObjectType.Typereference;
+        }
+
+        private static bool isDigits(string s)
+        {
+            if (s == null || s == "") return false;
+
+            for (int i = 0; i < s.Length; i++)
+                if ((s[i] ^ '0') > 9)
+                    if(s[i] != '.') { 
+                        return false;
+                    }
+
+            return true;
         }
 
         public static string RemoveSpecialCharacters(string str)

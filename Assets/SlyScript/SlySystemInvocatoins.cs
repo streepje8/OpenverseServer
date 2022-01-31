@@ -35,6 +35,7 @@ namespace Sly
         }
     }
 
+    [Serializable]
     public abstract class SlySystemInvocation
     {
         public abstract string name

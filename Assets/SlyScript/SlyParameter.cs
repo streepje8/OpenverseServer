@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sly
 {
+    [Serializable]
     public class SlyParameter
     {
         public string name;
@@ -16,6 +18,13 @@ namespace Sly
             name = var.name;
             type = var.type;
             this.value = value;
+        }
+
+        public SlyParameter(SlyObjectType type, string name, string value)
+        {
+            this.name = name;
+            this.value = value;
+            this.type = type;
         }
     }
 }
