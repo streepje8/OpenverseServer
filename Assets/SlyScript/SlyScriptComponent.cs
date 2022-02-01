@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Sly
 {
+    [Serializable]
     public class SlyScriptComponent : MonoBehaviour
     {
         public SlyScript Script = null;

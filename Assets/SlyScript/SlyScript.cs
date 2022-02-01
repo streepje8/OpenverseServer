@@ -380,13 +380,14 @@ namespace Sly
                 copy.value = var.value;
                 variables.Add(copy);
             }
-            foreach (SlyVariable slyvar in type.variables)
+            for(int i = 0; i < type.variables.Count; i++)
             {
+                SlyVariable slyvar = type.variables[i];
                 foreach (SlyVariable oldvar in oldvariables)
                 {
                     if (oldvar.name.Equals(slyvar.name) && oldvar.type.Equals(slyvar.type))
                     {
-                        slyvar.value = oldvar.value;
+                        variables[i].value = oldvar.value; //<- SUPER SUS
                     }
                 }
             }

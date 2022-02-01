@@ -65,11 +65,11 @@ namespace Sly
                 }
             }
         }
-        public SlyInvocation(string invocation)
+        public SlyInvocation(string invocationS)
         {
-            isSystemInvocation = true;
-            name = invocation.Substring(0, invocation.IndexOf('('));
-            string temp = invocation.Substring(invocation.IndexOf('(') + 1);
+            //isSystemInvocation = true;
+            name = invocationS.Substring(0, invocationS.IndexOf('('));
+            string temp = invocationS.Substring(invocationS.IndexOf('(') + 1);
             temp = temp.Replace(")", "");
             temp = temp.Replace("\"", "-QUOTE-");
             temp = Regex.Replace(temp, @"[^\w., -]", ""); //Sanitize the string
@@ -83,14 +83,14 @@ namespace Sly
             if(SlySystemInvocations.getSystemInvocations().ContainsKey(name))
             {
                 isSystemInvocation = true;
-                this.invocation = SlySystemInvocations.getSystemInvocations()[name];
-                if(this.invocation.expectedParameters.Keys.Count == foundParameters.Length)
+                invocation = SlySystemInvocations.getSystemInvocations()[name];
+                if(invocation.expectedParameters.Keys.Count == foundParameters.Length)
                 {
                     SlyParameter[] converted = SlyScript.ToParameterArray(foundParameters);
-                    List<string> expectedParameterNames = new List<string>(this.invocation.expectedParameters.Keys);
+                    List<string> expectedParameterNames = new List<string>(invocation.expectedParameters.Keys);
                     int i = 0;
                     bool success = true;
-                    foreach(SlyObjectType type in this.invocation.expectedParameters.Values)
+                    foreach(SlyObjectType type in invocation.expectedParameters.Values)
                     {
                         if((type != converted[i].type) && (converted[i].type != SlyObjectType.Typereference))
                         {
@@ -105,7 +105,7 @@ namespace Sly
                     }
                 } else
                 {
-                    Debug.LogError("[SLY/ERROR] " + name + " expects " + this.invocation.expectedParameters.Keys.Count + " parameters!");
+                    Debug.LogError("[SLY/ERROR] " + name + " expects " + invocation.expectedParameters.Keys.Count + " parameters!");
                 }
             } else
             {

@@ -12,52 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3802eb236736546b2604a9fbf83989, type: 3}
   m_Name: New Sly Script
   m_EditorClassIdentifier: 
-  sourceCode: "sly CoolSly {\r\n\r\n\tfloat meh = 69;\r\n\t\r\n\tvoid doRotation(float
-    amount) {\r\n\t\tRotate(amount,amount,amount);\r\n\t}\r\n\t\r\n\tvoid Update()
-    {\r\n\t\tdoRotation(meh);\r\n\t}\r\n\r\n}"
+  sourceCode: "sly CoolSly {\r\n\r\n\tfloat meh = 80;\r\n\t\r\n\tvoid Update() {\r\n\t\tTranslate(meh,0f,0f);\r\n\t}\r\n\r\n}"
   compiledClass:
     name: CoolSly
     variables:
     - name: meh
       type: 2
-      value: 69
+      value: 80
     functions:
-    - className: CoolSly
-      name: doRotation
-      returntype: 6
-      locals: []
-      parameters:
-      - name: amount
-        type: 2
-        value: 
-      invocations:
-      - isSystemInvocation: 1
-        executionFunction: 
-        name: Rotate
-        Myparameters:
-        - name: 
-          value: amount
-          isVariable: 1
-          type: 4
-        - name: 
-          value: amount
-          isVariable: 1
-          type: 4
-        - name: 
-          value: amount
-          isVariable: 1
-          type: 4
     - className: CoolSly
       name: Update
       returntype: 6
       locals: []
       parameters: []
       invocations:
-      - isSystemInvocation: 0
-        executionFunction: CoolSly.doRotation
-        name: doRotation
+      - isSystemInvocation: 1
+        executionFunction: 
+        name: Translate
         Myparameters:
-        - name: amount
+        - name: 
           value: meh
           isVariable: 1
           type: 4
+        - name: 
+          value: 0
+          isVariable: 0
+          type: 2
+        - name: 
+          value: 0
+          isVariable: 0
+          type: 2

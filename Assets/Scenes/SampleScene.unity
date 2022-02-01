@@ -161,7 +161,7 @@ MonoBehaviour:
       variables:
       - name: meh
         type: 2
-        value: 69
+        value: 70
       functions:
       - className: CoolSly
         name: doRotation
