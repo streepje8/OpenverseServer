@@ -1,2 +1,2 @@
 # Openverse
-Experimental Sly Script
+Experimental Server Core
