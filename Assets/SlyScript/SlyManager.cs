@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace Sly
 {
+#if UNITY_EDITOR
     [ExecuteAlways]
     [InitializeOnLoad]
     public class SlyManager : EditorWindow
@@ -82,4 +83,5 @@ namespace Sly
 
         }
     }
+#endif
 }

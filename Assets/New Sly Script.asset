@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3802eb236736546b2604a9fbf83989, type: 3}
   m_Name: New Sly Script
   m_EditorClassIdentifier: 
-  sourceCode: "sly CoolSly {\r\n\r\n\tfloat meh = 80;\r\n\t\r\n\tvoid Update() {\r\n\t\tTranslate(meh,0f,0f);\r\n\t}\r\n\r\n}"
+  sourceCode: "sly CoolSly {\r\n\r\n\tfloat meh = 80;\r\n\t\r\n\tvoid Update() {\r\n\t\tRotate(meh,0f,0f);\r\n\t}\r\n\r\n}"
   compiledClass:
     name: CoolSly
     variables:
@@ -28,7 +28,7 @@ MonoBehaviour:
       invocations:
       - isSystemInvocation: 1
         executionFunction: 
-        name: Translate
+        name: Rotate
         Myparameters:
         - name: 
           value: meh

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Sly
 {
+#if UNITY_EDITOR
     public class SlyScriptMenus : MonoBehaviour
     {
         [MenuItem("SlyScript/Create Script")]
@@ -21,4 +22,5 @@ namespace Sly
             AssetDatabase.CreateAsset(new SlyScript(), AssetDatabase.GenerateUniqueAssetPath(path + "/NewSlyScript.asset"));
         }
     }
+#endif
 }
