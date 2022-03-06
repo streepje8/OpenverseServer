@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 4207809435
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: eed8e59468795b5d53e5c319020681a8
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5184c6fbdd62a2aa42f16ee8f004fb01
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: ac3802eb236736546b2604a9fbf83989, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/New Sly Script.asset
+Dependencies: []

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: OpenverseSettings
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2661123501864938297, guid: c498d3656f5a5a84e8984a3ecdbe3c6f, type: 3}
+  serverName: Openverse_HubServer
   ServerPort: 7777
   playerLimit: 10

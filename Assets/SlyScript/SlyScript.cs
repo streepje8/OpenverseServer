@@ -228,7 +228,9 @@ namespace Sly
             }
             SlyManager.recompileAllExceptSelf(this);
             SlyManager.resolver.Register(compiledClass);
-            EditorUtility.SetDirty(this);
+            #if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+            #endif
         }
 
         public static SlyParameter[] ToParameterArray(string[] contentArray)

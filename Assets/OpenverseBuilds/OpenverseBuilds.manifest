@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 912747740
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: clientassets
+      Dependencies: {}
+    Info_1:
+      Name: clientscene
+      Dependencies: {}

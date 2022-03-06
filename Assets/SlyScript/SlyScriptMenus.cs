@@ -19,7 +19,7 @@ namespace Sly
             {
                 path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
             }
-            AssetDatabase.CreateAsset(new SlyScript(), AssetDatabase.GenerateUniqueAssetPath(path + "/NewSlyScript.asset"));
+            AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<SlyScript>(), AssetDatabase.GenerateUniqueAssetPath(path + "/NewSlyScript.asset"));
         }
     }
 #endif

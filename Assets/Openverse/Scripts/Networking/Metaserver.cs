@@ -2,6 +2,7 @@ using Openverse.Core;
 using Openverse.ScriptableObjects;
 using RiptideNetworking;
 using RiptideNetworking.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -40,9 +41,8 @@ namespace Openverse.NetCode {
             playerPrefab = settings.playerPrefab;
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 90; //Make the server run fast
-
             #if UNITY_EDITOR
-                RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
+                        RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
             #else
                 Console.Title = "Openverse Server";
                 Console.Clear();
@@ -80,7 +80,8 @@ namespace Openverse.NetCode {
 
         private void PlayerLeft(object sender, ClientDisconnectedEventArgs e)
         {
-            Destroy(OpenversePlayer.List[e.Id].gameObject);
+            if(OpenversePlayer.List.ContainsKey(e.Id))
+                Destroy(OpenversePlayer.List[e.Id].gameObject);
         }
     }
 }

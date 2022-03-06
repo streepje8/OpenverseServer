@@ -83,5 +83,61 @@ namespace Sly
 
         }
     }
+#else
+    [ExecuteAlways]
+    public class SlyManager : MonoBehaviour
+    {
+
+        public static bool queueRecompileEdited = true;
+        public static SlyResolver resolver = new SlyResolver();
+
+        public static void recompileAll()
+        {
+            recompileAllExceptSelf(null);
+        }
+
+        void Update()
+        {
+            if (queueRecompileEdited)
+            {
+                SlyManager.recompileAll();
+                queueRecompileEdited = false;
+            }
+        }
+
+        public static void recompileAllExceptSelf(SlyScript self)
+        {
+            List<Scene> scenes = new List<Scene>();
+            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+            {
+                scenes.Add(SceneManager.GetSceneByBuildIndex(i));
+            }
+            foreach (Scene scene in scenes)
+            {
+                GameObject[] rootObjectsInScene = scene.GetRootGameObjects();
+                for (int i = 0; i < rootObjectsInScene.Length; i++)
+                {
+                    SlyScriptComponent[] allComponents = rootObjectsInScene[i].GetComponentsInChildren<SlyScriptComponent>(true);
+                    for (int j = 0; j < allComponents.Length; j++)
+                    {
+                        SlyScriptComponent ssc = allComponents[j];
+                        if (ssc.Script != null)
+                        {
+                            if (ssc.Script != self)
+                            {
+                                ssc.Script.Compile();
+                            }
+                            if (ssc.instance == null)
+                            {
+                                ssc.instance = new SlyInstance(ssc.Script.compiledClass);
+                            }
+                            ssc.instance.recompile(ssc.Script.compiledClass);
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 #endif
 }
