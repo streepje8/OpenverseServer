@@ -13,7 +13,6 @@ namespace Openverse.NetCode {
     {
         public OpenverseSettings settings;
         public Server server;
-        private GameObject playerPrefab;
 
         public void OnValidate()
         {
@@ -38,7 +37,6 @@ namespace Openverse.NetCode {
 
         private void Start()
         {
-            playerPrefab = settings.playerPrefab;
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 90; //Make the server run fast
             #if UNITY_EDITOR
@@ -71,7 +69,7 @@ namespace Openverse.NetCode {
 
         private void NewPlayerConnected(object sender, ServerClientConnectedEventArgs e)
         {
-            foreach (OpenversePlayer player in OpenversePlayer.List.Values)
+            foreach (PlayerConnection player in PlayerConnection.List.Values)
             {
                 if (player.Id != e.Client.Id)
                     player.SendSpawn(e.Client.Id);
@@ -80,8 +78,8 @@ namespace Openverse.NetCode {
 
         private void PlayerLeft(object sender, ClientDisconnectedEventArgs e)
         {
-            if(OpenversePlayer.List.ContainsKey(e.Id))
-                Destroy(OpenversePlayer.List[e.Id].gameObject);
+            if (PlayerConnection.List.ContainsKey(e.Id))
+                PlayerConnection.List[e.Id].Destroy();
         }
     }
 }

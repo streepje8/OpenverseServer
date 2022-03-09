@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1508107946
+CRC: 2784578299
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 14d82bf893fdccbf004fe85b4d2c85cd
+    Hash: 582a342acb6bcbe7faf95406eebb461c
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 88f67d67fab3a87725a3a381260f3ea5
+    Hash: ae9b63d0c254aa855b8c5ad77d2eaf4c
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -15,25 +15,23 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
-- Class: 23
-  Script: {instanceID: 0}
 - Class: 28
   Script: {instanceID: 0}
-- Class: 33
-  Script: {instanceID: 0}
-- Class: 43
-  Script: {instanceID: 0}
 - Class: 48
-  Script: {instanceID: 0}
-- Class: 64
-  Script: {instanceID: 0}
-- Class: 65
-  Script: {instanceID: 0}
-- Class: 89
   Script: {instanceID: 0}
 - Class: 104
   Script: {instanceID: 0}
 - Class: 108
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9dbe1ce5153efb249b8fec12eb5b4590, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: e448fa5aec56946419dd94eb4812923e, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: c6f650940e5ae994cb62a1a6c5e52776, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 752cb8d31c5f9e24dbd6b5db157cab5e, type: 3}
+- Class: 115
   Script: {instanceID: 0}
 - Class: 157
   Script: {instanceID: 0}
@@ -41,5 +39,5 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/Scenes/ClientScene.unity
+- Assets/Scenes/RootScene.unity
 Dependencies: []

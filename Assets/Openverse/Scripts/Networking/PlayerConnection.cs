@@ -10,9 +10,11 @@ using static Openverse.NetCode.NetworkingCommunications;
 
 namespace Openverse.Core
 {
-    public class OpenversePlayer : MonoBehaviour
+    public class PlayerConnection : MonoBehaviour
     {
-        public static Dictionary<ushort, OpenversePlayer> List { get; private set; } = new Dictionary<ushort, OpenversePlayer>();
+        public static Dictionary<ushort, PlayerConnection> List { get; private set; } = new Dictionary<ushort, PlayerConnection>();
+
+        public VirtualPlayer myPlayer;
 
         public ushort Id { get; private set; }
         public string Username { get; private set; }
@@ -30,11 +32,18 @@ namespace Openverse.Core
 
         public static void Spawn(ushort id, string username)
         {
-            OpenversePlayer player = Instantiate(Metaserver.Instance.settings.playerPrefab, new Vector3(0f, 1f, 0f), Quaternion.identity).GetComponent<OpenversePlayer>();
-            player.name = $"Player {id} ({username})";
+            GameObject worldSpawn = GameObject.Find("WorldSpawn");
+            Vector3 spawnLocation = new Vector3(0f, 1f, 0f);
+            if (worldSpawn != null)
+            {
+                spawnLocation = worldSpawn.transform.position;
+            }
+            PlayerConnection player = Instantiate(Metaserver.Instance.settings.connectionPrefab, new Vector3(0,0,0), Quaternion.identity).GetComponent<PlayerConnection>();
+            player.name = $"PlayerConnection {id} ({username})";
             player.Id = id;
             player.Username = username;
-
+            player.myPlayer = Instantiate(Metaserver.Instance.settings.playerPrefab, spawnLocation, Quaternion.identity).GetComponent<VirtualPlayer>();
+            player.myPlayer.name = $"VirtualPlayer {id} ({username})";
             player.SendSpawn();
             List.Add(player.Id, player);
         }
@@ -77,6 +86,12 @@ namespace Openverse.Core
             Metaserver.Instance.server.Send(message, toPlayer);
         }
 
+        public void Destroy()
+        {
+            Destroy(myPlayer.gameObject);
+            Destroy(gameObject);
+        }
+
         #region Messages
         public void SendSpawn(ushort toClient)
         {
@@ -92,7 +107,7 @@ namespace Openverse.Core
         {
             message.Add(Id);
             message.Add(Username);
-            message.Add(transform.position);
+            message.Add(myPlayer.transform.position);
             return message;
         }
 
@@ -100,8 +115,8 @@ namespace Openverse.Core
         {
             Message message = Message.Create(MessageSendMode.unreliable, ServerToClientId.playerLocation);
             message.Add(Id);
-            message.Add(transform.position);
-            message.Add(transform.forward);
+            message.Add(myPlayer.transform.position);
+            message.Add(myPlayer.transform.forward);
             Metaserver.Instance.server.SendToAll(message);
         }
 
@@ -111,12 +126,7 @@ namespace Openverse.Core
             SendMetaverseWorld(fromClientId);
             Message OPWmessage = Message.Create(MessageSendMode.reliable, ServerToClientId.openWorld);
             Metaserver.Instance.server.Send(OPWmessage, fromClientId);
-
-            //Send Player World
-            //Message content = Message.Create(MessageSendMode.reliable, ServerToClientId.MetaContent);
-            //content.AddBytes();
-
-            //Spawn(fromClientId, message.GetString());
+            Spawn(fromClientId, message.GetString());
         }
         #endregion
 
