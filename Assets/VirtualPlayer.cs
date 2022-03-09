@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class VirtualPlayer : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public GameObject head;
+    public GameObject handLeft;
+    public GameObject handRight;
+
     void Start()
     {
         

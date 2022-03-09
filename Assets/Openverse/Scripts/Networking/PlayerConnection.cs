@@ -30,6 +30,16 @@ namespace Openverse.Core
             SendLocation();    
         }
 
+        public void UpdateVRPositions(Message message)
+        {
+            myPlayer.head.transform.localPosition = message.GetVector3();
+            myPlayer.head.transform.localRotation = message.GetQuaternion();
+            myPlayer.handLeft.transform.localPosition = message.GetVector3();
+            myPlayer.handLeft.transform.localRotation = message.GetQuaternion();
+            myPlayer.handRight.transform.localPosition = message.GetVector3();
+            myPlayer.handRight.transform.localRotation = message.GetQuaternion();
+        }
+
         public static void Spawn(ushort id, string username)
         {
             GameObject worldSpawn = GameObject.Find("WorldSpawn");
@@ -86,6 +96,14 @@ namespace Openverse.Core
             Metaserver.Instance.server.Send(message, toPlayer);
         }
 
+        public void SendNetworkedObjects()
+        {
+            foreach(NetworkedObject no in NetworkedObject.NetworkedObjects.Values)
+            {
+                no.SendtoPlayer(this);
+            }
+        }
+
         public void Destroy()
         {
             Destroy(myPlayer.gameObject);
@@ -127,6 +145,25 @@ namespace Openverse.Core
             Message OPWmessage = Message.Create(MessageSendMode.reliable, ServerToClientId.openWorld);
             Metaserver.Instance.server.Send(OPWmessage, fromClientId);
             Spawn(fromClientId, message.GetString());
+        }
+
+        [MessageHandler((ushort)ClientToServerId.playerReady)]
+        private static void OnPlayerReady(ushort fromClientId, Message message)
+        {
+            if (PlayerConnection.List.TryGetValue(fromClientId, out PlayerConnection plc))
+            {
+                plc.SendNetworkedObjects();
+            }
+        }
+
+        [MessageHandler((ushort)ClientToServerId.vrPositions)]
+        private static void UpdateVRPositions(ushort fromClientId, Message message)
+        {
+
+            if(PlayerConnection.List.TryGetValue(fromClientId, out PlayerConnection plc))
+            {
+                plc.UpdateVRPositions(message);
+            }
         }
         #endregion
 

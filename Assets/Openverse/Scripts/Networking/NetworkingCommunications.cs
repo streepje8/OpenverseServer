@@ -11,11 +11,15 @@ namespace Openverse.NetCode
             downloadWorld = 1,
             openWorld,
             spawnPlayer,
-            playerLocation
+            playerLocation,
+            spawnObject,
+            updateObject
         }
         public enum ClientToServerId : ushort
         {
-            playerName = 1
+            playerName = 1,
+            vrPositions,
+            playerReady
         }
 
     }
