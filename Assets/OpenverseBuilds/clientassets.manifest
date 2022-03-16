@@ -1,19 +1,35 @@
 ManifestFileVersion: 0
-CRC: 4207809435
+CRC: 190515741
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: eed8e59468795b5d53e5c319020681a8
+    Hash: 98b9b71d9b7f6bed1ee51dc525b396f0
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 5184c6fbdd62a2aa42f16ee8f004fb01
+    Hash: c33878ce9622cf46763118fba7d7d88c
 HashAppended: 0
 ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 11500000, guid: ac3802eb236736546b2604a9fbf83989, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/Openverse/DefaultAssets/DefaultMaterial.mat
 - Assets/New Sly Script.asset
+- Assets/Openverse/DefaultAssets/MONKE.fbx
 Dependencies: []

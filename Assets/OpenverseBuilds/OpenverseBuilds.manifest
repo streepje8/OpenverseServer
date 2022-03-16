@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 3543390886
+CRC: 3927455611
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -10,4 +10,5 @@ AssetBundleManifest:
       Dependencies: {}
     Info_2:
       Name: serverscene
-      Dependencies: {}
+      Dependencies:
+        Dependency_0: clientassets

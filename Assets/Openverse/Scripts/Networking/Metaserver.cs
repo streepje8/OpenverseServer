@@ -13,6 +13,8 @@ namespace Openverse.NetCode {
     {
         public OpenverseSettings settings;
         public Server server;
+        public AssetBundle clientAssets;
+        public UnityEngine.Object[] allAssets;
 
         public void OnValidate()
         {
@@ -41,13 +43,18 @@ namespace Openverse.NetCode {
             Application.targetFrameRate = 90; //Make the server run fast
             #if UNITY_EDITOR
                         RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
-            #else
+#else
                 Console.Title = "Openverse Server";
                 Console.Clear();
                 Application.SetStackTraceLogType(UnityEngine.LogType.Log, StackTraceLogType.None);
                 RiptideLogger.Initialize(Debug.Log, true);
-            #endif
+#endif
+            Debug.Log("Loading client assets...");
+            Debug.Log("Looking at path: " + Application.dataPath + "/OpenverseBuilds/clientassets");
+            clientAssets = AssetBundle.LoadFromFile(Application.dataPath + "/OpenverseBuilds/clientassets");
+            allAssets = clientAssets.LoadAllAssets();
 
+            Debug.Log("Starting server...");
             server = new Server();
             server.ClientConnected += NewPlayerConnected;
             server.ClientDisconnected += PlayerLeft;
@@ -61,6 +68,7 @@ namespace Openverse.NetCode {
 
         private void OnApplicationQuit()
         {
+            clientAssets.Unload(true);
             server.Stop();
 
             server.ClientConnected -= NewPlayerConnected;

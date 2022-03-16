@@ -20,7 +20,9 @@ public class NetworkedObject : MonoBehaviour
         typeof(bool),
         typeof(Vector3),
         typeof(Vector2),
-        typeof(Quaternion)
+        typeof(Quaternion),
+        typeof(Mesh),
+        typeof(Material)
     };
 
     private void Awake()
@@ -35,64 +37,103 @@ public class NetworkedObject : MonoBehaviour
         createMessage.Add(myID.ToString());
         createMessage.Add(transform.position);
         createMessage.Add(transform.rotation);
+        createMessage.Add(transform.localScale);
         createMessage.Add(gameObject.name);
         Component[] myComponents = gameObject.GetComponents<Component>();
-        createMessage.Add(myComponents.Length);
+        int nonNetworkedComps = 0;
+        for (int i = 0; i < myComponents.Length; i++)
+        {
+            if (!AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()) || myComponents[i].GetType() == typeof(Transform))
+            {
+                nonNetworkedComps++;
+            }
+        }
+        createMessage.Add(myComponents.Length - nonNetworkedComps);
         for(int i = 0; i < myComponents.Length; i++)
         {
-            if(AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()))
+            if(AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()) && myComponents[i].GetType() != typeof(Transform))
             {
                 createMessage.Add(AllowedComponents.allowedTypesList.IndexOf(myComponents[i].GetType()));
                 foreach (var prop in myComponents[i].GetType().GetProperties())
                 {
-                    if (networkedPropertyTypes.Contains(prop.GetType()))
+                    if (networkedPropertyTypes.Contains(prop.PropertyType) && prop.CanWrite)
                     {
                         createMessage.Add(true);
                         createMessage.Add(prop.Name);
+                        bool success = false;
                         //Couldn't make this a switch but would have loved to do so
-                        if (prop.GetType() == typeof(string))
+                        if (prop.PropertyType == typeof(string))
                         {
                             createMessage.Add((ushort)0);
                             createMessage.Add((string)prop.GetValue(myComponents[i], null));
+                            success = true;
                         }
-                        if (prop.GetType() == typeof(float))
+                        if (prop.PropertyType == typeof(float))
                         {
                             createMessage.Add((ushort)1);
                             createMessage.Add((float)prop.GetValue(myComponents[i], null));
+                            success = true;
                         }
-                        if (prop.GetType() == typeof(int))
+                        if (prop.PropertyType == typeof(int))
                         {
                             createMessage.Add((ushort)2);
                             createMessage.Add((int)prop.GetValue(myComponents[i], null));
+                            success = true;
                         }
-                        if (prop.GetType() == typeof(bool))
+                        if (prop.PropertyType == typeof(bool))
                         {
                             createMessage.Add((ushort)3);
                             createMessage.Add((bool)prop.GetValue(myComponents[i], null));
+                            success = true;
                         }
-                        if (prop.GetType() == typeof(Vector2))
+                        if (prop.PropertyType == typeof(Vector2))
                         {
                             createMessage.Add((ushort)4);
                             createMessage.Add((Vector2)prop.GetValue(myComponents[i], null));
+                            success = true;
                         }
-                        if (prop.GetType() == typeof(Vector3))
+                        if (prop.PropertyType == typeof(Vector3))
                         {
                             createMessage.Add((ushort)5);
                             createMessage.Add((Vector3)prop.GetValue(myComponents[i], null));
+                            success = true;
                         }
-                        if (prop.GetType() == typeof(Quaternion))
+                        if (prop.PropertyType == typeof(Quaternion))
                         {
                             createMessage.Add((ushort)6);
                             createMessage.Add((Quaternion)prop.GetValue(myComponents[i], null));
+                            success = true;
+                        }
+                        if(!success)
+                        {
+                            object value = prop.GetValue(myComponents[i], null);
+                            string name = "null";
+                            try
+                            {
+                                name = ((UnityEngine.Object)value).name.Replace(" (Instance)","");
+                                bool foundInBundle = false;
+                                foreach (UnityEngine.Object obj in Metaserver.Instance.allAssets)
+                                {
+                                    if (obj.name == name)
+                                    {
+                                        foundInBundle = true;
+                                    }
+                                }
+                                if(foundInBundle)
+                                {
+                                    createMessage.Add((ushort)7);
+                                    createMessage.Add(name);
+                                }
+                            } catch { }
                         }
                     }
                 }
                 createMessage.Add(false);
             } else
             {
-                if(myComponents[i]?.GetType() != typeof(NetworkedObject))
+                if(myComponents[i]?.GetType() != typeof(NetworkedObject) && myComponents[i].GetType() != typeof(Transform))
                 {
-                    Debug.LogWarning("The component of type " + myComponents[i].name + " will not be networked to the client!");
+                    Debug.LogWarning("The component of type " + myComponents[i].GetType().Name + " will not be networked to the client!");
                 }
             }
         }
