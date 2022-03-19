@@ -58,48 +58,60 @@ public class NetworkedObject : MonoBehaviour
                 {
                     if (networkedPropertyTypes.Contains(prop.PropertyType) && prop.CanWrite)
                     {
-                        createMessage.Add(true);
-                        createMessage.Add(prop.Name);
                         bool success = false;
                         //Couldn't make this a switch but would have loved to do so
                         if (prop.PropertyType == typeof(string))
                         {
+                            createMessage.Add(true);
+                            createMessage.Add(prop.Name);
                             createMessage.Add((ushort)0);
                             createMessage.Add((string)prop.GetValue(myComponents[i], null));
                             success = true;
                         }
                         if (prop.PropertyType == typeof(float))
                         {
+                            createMessage.Add(true);
+                            createMessage.Add(prop.Name);
                             createMessage.Add((ushort)1);
                             createMessage.Add((float)prop.GetValue(myComponents[i], null));
                             success = true;
                         }
                         if (prop.PropertyType == typeof(int))
                         {
+                            createMessage.Add(true);
+                            createMessage.Add(prop.Name);
                             createMessage.Add((ushort)2);
                             createMessage.Add((int)prop.GetValue(myComponents[i], null));
                             success = true;
                         }
                         if (prop.PropertyType == typeof(bool))
                         {
+                            createMessage.Add(true);
+                            createMessage.Add(prop.Name);
                             createMessage.Add((ushort)3);
                             createMessage.Add((bool)prop.GetValue(myComponents[i], null));
                             success = true;
                         }
                         if (prop.PropertyType == typeof(Vector2))
                         {
+                            createMessage.Add(true);
+                            createMessage.Add(prop.Name);
                             createMessage.Add((ushort)4);
                             createMessage.Add((Vector2)prop.GetValue(myComponents[i], null));
                             success = true;
                         }
                         if (prop.PropertyType == typeof(Vector3))
                         {
+                            createMessage.Add(true);
+                            createMessage.Add(prop.Name);
                             createMessage.Add((ushort)5);
                             createMessage.Add((Vector3)prop.GetValue(myComponents[i], null));
                             success = true;
                         }
                         if (prop.PropertyType == typeof(Quaternion))
                         {
+                            createMessage.Add(true);
+                            createMessage.Add(prop.Name);
                             createMessage.Add((ushort)6);
                             createMessage.Add((Quaternion)prop.GetValue(myComponents[i], null));
                             success = true;
@@ -121,6 +133,8 @@ public class NetworkedObject : MonoBehaviour
                                 }
                                 if(foundInBundle)
                                 {
+                                    createMessage.Add(true);
+                                    createMessage.Add(prop.Name);
                                     createMessage.Add((ushort)7);
                                     createMessage.Add(name);
                                 }
