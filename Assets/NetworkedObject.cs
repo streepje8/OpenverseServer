@@ -4,6 +4,7 @@ using RiptideNetworking;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using static Openverse.NetCode.NetworkingCommunications;
 
@@ -11,6 +12,8 @@ public class NetworkedObject : MonoBehaviour
 {
     public Guid myID;
     public static Dictionary<Guid, NetworkedObject> NetworkedObjects = new Dictionary<Guid, NetworkedObject>();
+
+    public List<WatchableProperty> watchableProperties = new List<WatchableProperty>();
 
     public HashSet<Type> networkedPropertyTypes = new HashSet<Type>
     {
@@ -137,8 +140,12 @@ public class NetworkedObject : MonoBehaviour
                                     createMessage.Add(prop.Name);
                                     createMessage.Add((ushort)7);
                                     createMessage.Add(name);
+                                    AddWatchableProperty(myComponents[i], prop);
                                 }
                             } catch { }
+                        } else
+                        {
+                            AddWatchableProperty(myComponents[i], prop);
                         }
                     }
                 }
@@ -152,5 +159,23 @@ public class NetworkedObject : MonoBehaviour
             }
         }
         Metaserver.Instance.server.Send(createMessage, p.Id);
+    }
+
+    private void AddWatchableProperty(Component comp,PropertyInfo prop)
+    {
+        watchableProperties.Add(new WatchableProperty(comp.GetType(), prop));
+    }
+}
+
+public class WatchableProperty
+{
+    public PropertyInfo property;
+    public Type component;
+    public bool isWatched;
+
+    public WatchableProperty(Type comp, PropertyInfo prop)
+    {
+        property = prop;
+        component = comp;
     }
 }
