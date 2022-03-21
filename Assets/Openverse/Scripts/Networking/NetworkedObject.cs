@@ -1,3 +1,4 @@
+using HarmonyLib;
 using Openverse.Core;
 using Openverse.NetCode;
 using RiptideNetworking;
@@ -5,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 using static Openverse.NetCode.NetworkingCommunications;
 
@@ -12,8 +14,6 @@ public class NetworkedObject : MonoBehaviour
 {
     public Guid myID;
     public static Dictionary<Guid, NetworkedObject> NetworkedObjects = new Dictionary<Guid, NetworkedObject>();
-
-    public List<WatchableProperty> watchableProperties = new List<WatchableProperty>();
 
     public HashSet<Type> networkedPropertyTypes = new HashSet<Type>
     {
@@ -140,12 +140,12 @@ public class NetworkedObject : MonoBehaviour
                                     createMessage.Add(prop.Name);
                                     createMessage.Add((ushort)7);
                                     createMessage.Add(name);
-                                    AddWatchableProperty(myComponents[i], prop);
+                                    PatchProperty(myComponents[i], prop);
                                 }
                             } catch { }
                         } else
                         {
-                            AddWatchableProperty(myComponents[i], prop);
+                            PatchProperty(myComponents[i], prop);
                         }
                     }
                 }
@@ -161,21 +161,41 @@ public class NetworkedObject : MonoBehaviour
         Metaserver.Instance.server.Send(createMessage, p.Id);
     }
 
-    private void AddWatchableProperty(Component comp,PropertyInfo prop)
+    private void PatchProperty(Component comp,PropertyInfo prop)
     {
-        watchableProperties.Add(new WatchableProperty(comp.GetType(), prop));
+        if (Bootloader.Instance == null || Bootloader.Instance.harmony == null)
+        {
+            Debug.LogError("Harmony is null! Please ensure the bootloader is present in the scene!");
+            return;
+        }
+        if (prop != null && prop.GetSetMethod() != null)
+        {
+            MethodInfo setmet = prop.GetSetMethod();
+            if (setmet.IsDeclaredMember() is true)
+                try
+                {
+                    Bootloader.Instance.harmony.Patch(setmet, transpiler: new HarmonyMethod(GetType().GetMethod("Transpiler", BindingFlags.NonPublic | BindingFlags.Static)));
+                } catch(Exception e)
+                {
+                    Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
+                }
+        }
     }
-}
 
-public class WatchableProperty
-{
-    public PropertyInfo property;
-    public Type component;
-    public bool isWatched;
+    static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo(() => NetworkedObject.onPropertyChange());
 
-    public WatchableProperty(Type comp, PropertyInfo prop)
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        property = prop;
-        component = comp;
+        yield return new CodeInstruction(OpCodes.Call, propertyChangeMethod);
+        foreach (CodeInstruction instruction in instructions)
+        {
+            yield return instruction;
+        }
+    }
+
+    public static void onPropertyChange()
+    {
+        Bootloader.Instance.log(Environment.StackTrace);
+        Bootloader.Instance.log("OnPropertyChange");
     }
 }
