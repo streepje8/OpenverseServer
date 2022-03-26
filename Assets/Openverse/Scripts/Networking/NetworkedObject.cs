@@ -13,7 +13,12 @@ using static Openverse.NetCode.NetworkingCommunications;
 public class NetworkedObject : MonoBehaviour
 {
     public Guid myID;
+    public MessageSendMode mode = MessageSendMode.unreliable;
     public static Dictionary<Guid, NetworkedObject> NetworkedObjects = new Dictionary<Guid, NetworkedObject>();
+    public List<PropertyInfo> toNetworkQueue = new List<PropertyInfo>();
+
+    private bool createdCreateMessage = false;
+    private Message myCreateMessage;
 
     public HashSet<Type> networkedPropertyTypes = new HashSet<Type>
     {
@@ -33,7 +38,30 @@ public class NetworkedObject : MonoBehaviour
         NetworkedObjects.Add(myID,this);
     }
 
+    private void FixedUpdate()
+    {
+        //Network all properties in the toNetworkQueue
+        for(int i = toNetworkQueue.Count - 1; i >= 0; i--)
+        {
+            Message propertyUpdateMessage = Message.Create(mode, ServerToClientId.updateVariable);
+            propertyUpdateMessage.Add(myID.ToString());
+            propertyUpdateMessage.Add( ); //add the infos
+            Metaserver.Instance.server.SendToAll(propertyUpdateMessage);
+            toNetworkQueue.RemoveAt(i);
+        }
+    }
+
     public void SendtoPlayer(PlayerConnection p)
+    {
+        if(!createdCreateMessage)
+        {
+            myCreateMessage = CreateCreateMessage();
+            createdCreateMessage = true;
+        }
+        Metaserver.Instance.server.Send(myCreateMessage, p.Id);
+    }
+
+    public Message CreateCreateMessage()
     {
         myID = Guid.NewGuid();
         Message createMessage = Message.Create(MessageSendMode.reliable, ServerToClientId.spawnObject);
@@ -52,9 +80,9 @@ public class NetworkedObject : MonoBehaviour
             }
         }
         createMessage.Add(myComponents.Length - nonNetworkedComps);
-        for(int i = 0; i < myComponents.Length; i++)
+        for (int i = 0; i < myComponents.Length; i++)
         {
-            if(AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()) && myComponents[i].GetType() != typeof(Transform))
+            if (AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()) && myComponents[i].GetType() != typeof(Transform))
             {
                 createMessage.Add(AllowedComponents.allowedTypesList.IndexOf(myComponents[i].GetType()));
                 foreach (var prop in myComponents[i].GetType().GetProperties())
@@ -119,13 +147,13 @@ public class NetworkedObject : MonoBehaviour
                             createMessage.Add((Quaternion)prop.GetValue(myComponents[i], null));
                             success = true;
                         }
-                        if(!success)
+                        if (!success)
                         {
                             object value = prop.GetValue(myComponents[i], null);
                             string name = "null";
                             try
                             {
-                                name = ((UnityEngine.Object)value).name.Replace(" (Instance)","");
+                                name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "");
                                 bool foundInBundle = false;
                                 foreach (UnityEngine.Object obj in Metaserver.Instance.allAssets)
                                 {
@@ -134,7 +162,7 @@ public class NetworkedObject : MonoBehaviour
                                         foundInBundle = true;
                                     }
                                 }
-                                if(foundInBundle)
+                                if (foundInBundle)
                                 {
                                     createMessage.Add(true);
                                     createMessage.Add(prop.Name);
@@ -142,23 +170,26 @@ public class NetworkedObject : MonoBehaviour
                                     createMessage.Add(name);
                                     PatchProperty(myComponents[i], prop);
                                 }
-                            } catch { }
-                        } else
+                            }
+                            catch { }
+                        }
+                        else
                         {
                             PatchProperty(myComponents[i], prop);
                         }
                     }
                 }
                 createMessage.Add(false);
-            } else
+            }
+            else
             {
-                if(myComponents[i]?.GetType() != typeof(NetworkedObject) && myComponents[i].GetType() != typeof(Transform))
+                if (myComponents[i]?.GetType() != typeof(NetworkedObject) && myComponents[i].GetType() != typeof(Transform))
                 {
                     Debug.LogWarning("The component of type " + myComponents[i].GetType().Name + " will not be networked to the client!");
                 }
             }
         }
-        Metaserver.Instance.server.Send(createMessage, p.Id);
+        return createMessage;
     }
 
     private void PatchProperty(Component comp,PropertyInfo prop)
@@ -174,6 +205,8 @@ public class NetworkedObject : MonoBehaviour
             if (setmet.IsDeclaredMember() is true)
                 try
                 {
+                    propetyGUID = Bootloader.Instance.GetPropertyID(prop);
+                    objectGUID = Bootloader.Instance.GetNetworkedObjectID(this);
                     Bootloader.Instance.harmony.Patch(setmet, transpiler: new HarmonyMethod(GetType().GetMethod("Transpiler", BindingFlags.NonPublic | BindingFlags.Static)));
                 } catch(Exception e)
                 {
@@ -182,10 +215,13 @@ public class NetworkedObject : MonoBehaviour
         }
     }
 
-    static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo(() => NetworkedObject.onPropertyChange());
+    static string propetyGUID;
+    static string objectGUID;
+    static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo((string a) => NetworkedObject.onPropertyChange(a));
 
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
+        yield return new CodeInstruction(OpCodes.Ldstr, objectGUID + "$" + propetyGUID);
         yield return new CodeInstruction(OpCodes.Call, propertyChangeMethod);
         foreach (CodeInstruction instruction in instructions)
         {
@@ -193,9 +229,23 @@ public class NetworkedObject : MonoBehaviour
         }
     }
 
-    public static void onPropertyChange()
+    public static void onPropertyChange(string a)
     {
-        Bootloader.Instance.log(Environment.StackTrace);
-        Bootloader.Instance.log("OnPropertyChange");
+        string[] bois = a.Split('$');
+        onPropertyChange(bois[0],bois[1]);
+    }
+    public static void onPropertyChange(string objectID, string propertyID)
+    {
+        NetworkedObject obj = Bootloader.Instance.GetNetworkedObject(objectID);
+        PropertyInfo theProperty = Bootloader.Instance.GetProperty(propertyID);
+        if(obj == null || theProperty == null)
+        {
+            Debug.LogWarning("A patched variable changed but its not correctly registered!");
+            return;
+        }
+        if(!obj.toNetworkQueue.Contains(theProperty))
+        {
+            obj.toNetworkQueue.Add(theProperty);
+        }
     }
 }
