@@ -16,9 +16,17 @@ public class NetworkedObject : MonoBehaviour
     public MessageSendMode mode = MessageSendMode.unreliable;
     public static Dictionary<Guid, NetworkedObject> NetworkedObjects = new Dictionary<Guid, NetworkedObject>();
     public List<PropertyInfo> toNetworkQueue = new List<PropertyInfo>();
+    public Dictionary<PropertyInfo, string> NetworkedVariables = new Dictionary<PropertyInfo, string>();
+    public bool isFinished;
 
+
+    private Dictionary<string, Component> NetworkedComponents = new Dictionary<string, Component>();
     private bool createdCreateMessage = false;
     private Message myCreateMessage;
+
+    static string propetyGUID;
+    static string objectGUID;
+    static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo((string a) => NetworkedObject.onPropertyChange(a));
 
     public HashSet<Type> networkedPropertyTypes = new HashSet<Type>
     {
@@ -35,6 +43,7 @@ public class NetworkedObject : MonoBehaviour
 
     private void Awake()
     {
+        myID = Guid.NewGuid();
         NetworkedObjects.Add(myID,this);
     }
 
@@ -45,25 +54,78 @@ public class NetworkedObject : MonoBehaviour
         {
             Message propertyUpdateMessage = Message.Create(mode, ServerToClientId.updateVariable);
             propertyUpdateMessage.Add(myID.ToString());
-            propertyUpdateMessage.Add( ); //add the infos
-            Metaserver.Instance.server.SendToAll(propertyUpdateMessage);
+            PropertyInfo prop = toNetworkQueue[i];
+            propertyUpdateMessage.Add(NetworkedVariables[prop]); //add the infos
+            bool success = false;
+            //Couldn't make this a switch but would have loved to do so
+            if (prop.PropertyType == typeof(string))
+            {
+                propertyUpdateMessage.Add((ushort)0);
+                propertyUpdateMessage.Add((string)prop.GetValue(NetworkedComponents[NetworkedVariables[prop]], null));
+                success = true;
+            }
+            if (prop.PropertyType == typeof(float))
+            {
+                propertyUpdateMessage.Add((ushort)1);
+                propertyUpdateMessage.Add((float)prop.GetValue(NetworkedComponents[NetworkedVariables[prop]], null));
+                success = true;
+            }
+            if (prop.PropertyType == typeof(int))
+            {
+                propertyUpdateMessage.Add((ushort)2);
+                propertyUpdateMessage.Add((int)prop.GetValue(NetworkedComponents[NetworkedVariables[prop]], null));
+                success = true;
+            }
+            if (prop.PropertyType == typeof(bool))
+            {
+                propertyUpdateMessage.Add((ushort)3);
+                propertyUpdateMessage.Add((bool)prop.GetValue(NetworkedComponents[NetworkedVariables[prop]], null));
+                success = true;
+            }
+            if (prop.PropertyType == typeof(Vector2))
+            {
+                propertyUpdateMessage.Add((ushort)4);
+                propertyUpdateMessage.Add((Vector2)prop.GetValue(NetworkedComponents[NetworkedVariables[prop]], null));
+                success = true;
+            }
+            if (prop.PropertyType == typeof(Vector3))
+            {
+                propertyUpdateMessage.Add((ushort)5);
+                propertyUpdateMessage.Add((Vector3)prop.GetValue(NetworkedComponents[NetworkedVariables[prop]], null));
+                success = true;
+            }
+            if (prop.PropertyType == typeof(Quaternion))
+            {
+                propertyUpdateMessage.Add((ushort)6);
+                propertyUpdateMessage.Add((Quaternion)prop.GetValue(NetworkedComponents[NetworkedVariables[prop]], null));
+                success = true;
+            }
+            if (!success)
+            {
+                Debug.LogWarning("Failed to sync value of variable " + prop.Name + "! Could not add value to packet!");
+            }
+            else
+            {
+                Metaserver.Instance.server.SendToAll(propertyUpdateMessage);
+            }
             toNetworkQueue.RemoveAt(i);
         }
     }
 
     public void SendtoPlayer(PlayerConnection p)
     {
+        isFinished = false;
         if(!createdCreateMessage)
         {
             myCreateMessage = CreateCreateMessage();
             createdCreateMessage = true;
         }
         Metaserver.Instance.server.Send(myCreateMessage, p.Id);
+        isFinished = true;
     }
 
     public Message CreateCreateMessage()
     {
-        myID = Guid.NewGuid();
         Message createMessage = Message.Create(MessageSendMode.reliable, ServerToClientId.spawnObject);
         createMessage.Add(myID.ToString());
         createMessage.Add(transform.position);
@@ -208,16 +270,14 @@ public class NetworkedObject : MonoBehaviour
                     propetyGUID = Bootloader.Instance.GetPropertyID(prop);
                     objectGUID = Bootloader.Instance.GetNetworkedObjectID(this);
                     Bootloader.Instance.harmony.Patch(setmet, transpiler: new HarmonyMethod(GetType().GetMethod("Transpiler", BindingFlags.NonPublic | BindingFlags.Static)));
+                    NetworkedVariables.Add(prop, comp.GetType().Name + "$.$" + prop.Name);
+                    NetworkedComponents.Add(comp.GetType().Name + "$.$" + prop.Name, comp);
                 } catch(Exception e)
                 {
                     Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
                 }
         }
     }
-
-    static string propetyGUID;
-    static string objectGUID;
-    static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo((string a) => NetworkedObject.onPropertyChange(a));
 
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {

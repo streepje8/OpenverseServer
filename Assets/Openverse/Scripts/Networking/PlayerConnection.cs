@@ -96,12 +96,23 @@ namespace Openverse.Core
             Metaserver.Instance.server.Send(message, toPlayer);
         }
 
+        private Stack<NetworkedObject> toSendObjects = new Stack<NetworkedObject>();
+
         public void SendNetworkedObjects()
         {
-            foreach(NetworkedObject no in NetworkedObject.NetworkedObjects.Values)
+            StartCoroutine(TrySyncAllObjects(0.1f));            
+        }
+        IEnumerator TrySyncAllObjects(float time)
+        {
+            foreach (NetworkedObject no in NetworkedObject.NetworkedObjects.Values)
             {
                 no.SendtoPlayer(this);
+                while(!no.isFinished)
+                {
+                    yield return new WaitForSeconds(time);
+                }
             }
+            yield return null;
         }
 
         public void Destroy()
