@@ -233,7 +233,9 @@ public class NetworkedObject : MonoBehaviour
                                     PatchProperty(myComponents[i], prop);
                                 }
                             }
-                            catch { }
+                            catch(Exception e) {
+                                Debug.LogWarning("AYO");
+                            }
                         }
                         else
                         {
