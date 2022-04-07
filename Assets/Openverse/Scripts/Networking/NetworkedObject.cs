@@ -23,10 +23,9 @@ public class NetworkedObject : MonoBehaviour
     private Dictionary<string, Component> NetworkedComponents = new Dictionary<string, Component>();
     private bool createdCreateMessage = false;
     private Message myCreateMessage;
+    static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo((object o) => NetworkedObject.onPropertyChange(o));
 
-    static string propetyGUID;
-    static string objectGUID;
-    static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo((string a) => NetworkedObject.onPropertyChange(a));
+    public static List<string> patched = new List<string>();
 
     public HashSet<Type> networkedPropertyTypes = new HashSet<Type>
     {
@@ -215,26 +214,29 @@ public class NetworkedObject : MonoBehaviour
                             string name = "null";
                             try
                             {
-                                name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "");
-                                bool foundInBundle = false;
-                                foreach (UnityEngine.Object obj in Metaserver.Instance.allAssets)
+                                if (value != null && ((UnityEngine.Object)value).name != null)
                                 {
-                                    if (obj.name == name)
+                                    name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "");
+                                    bool foundInBundle = false;
+                                    foreach (UnityEngine.Object obj in Metaserver.Instance.allAssets)
                                     {
-                                        foundInBundle = true;
+                                        if (obj.name == name)
+                                        {
+                                            foundInBundle = true;
+                                        }
                                     }
-                                }
-                                if (foundInBundle)
-                                {
-                                    createMessage.Add(true);
-                                    createMessage.Add(prop.Name);
-                                    createMessage.Add((ushort)7);
-                                    createMessage.Add(name);
-                                    PatchProperty(myComponents[i], prop);
+                                    if (foundInBundle)
+                                    {
+                                        createMessage.Add(true);
+                                        createMessage.Add(prop.Name);
+                                        createMessage.Add((ushort)7);
+                                        createMessage.Add(name);
+                                        PatchProperty(myComponents[i], prop);
+                                    }
                                 }
                             }
                             catch(Exception e) {
-                                Debug.LogWarning("AYO");
+                                Debug.LogException(e);
                             }
                         }
                         else
@@ -258,43 +260,64 @@ public class NetworkedObject : MonoBehaviour
 
     private void PatchProperty(Component comp,PropertyInfo prop)
     {
-        if (Bootloader.Instance == null || Bootloader.Instance.harmony == null)
+        if (!patched.Contains(comp.GetType() + "&&" + prop.Name))
         {
-            Debug.LogError("Harmony is null! Please ensure the bootloader is present in the scene!");
-            return;
-        }
-        if (prop != null && prop.GetSetMethod() != null)
-        {
-            MethodInfo setmet = prop.GetSetMethod();
-            if (setmet.IsDeclaredMember() is true)
-                try
-                {
-                    propetyGUID = Bootloader.Instance.GetPropertyID(prop);
-                    objectGUID = Bootloader.Instance.GetNetworkedObjectID(this);
-                    Bootloader.Instance.harmony.Patch(setmet, transpiler: new HarmonyMethod(GetType().GetMethod("Transpiler", BindingFlags.NonPublic | BindingFlags.Static)));
-                    NetworkedVariables.Add(prop, comp.GetType().Name + "$.$" + prop.Name);
-                    NetworkedComponents.Add(comp.GetType().Name + "$.$" + prop.Name, comp);
-                } catch(Exception e)
-                {
-                    Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
-                }
+            if (Bootloader.Instance == null || Bootloader.Instance.harmony == null)
+            {
+                Debug.LogError("Harmony is null! Please ensure the bootloader is present in the scene!");
+                return;
+            }
+            if (prop != null && prop.GetSetMethod() != null)
+            {
+                MethodInfo setmet = prop.GetSetMethod();
+                if (setmet.IsDeclaredMember() is true)
+                    try
+                    {
+                        Bootloader.Instance.harmony.Patch(setmet, transpiler: new HarmonyMethod(typeof(NetworkedObject).GetMethod("Transpiler", BindingFlags.NonPublic | BindingFlags.Static)));
+                        patched.Add(comp.GetType() + "&&" + prop.Name);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
+                    }
+            }
         }
     }
 
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        yield return new CodeInstruction(OpCodes.Ldstr, objectGUID + "$" + propetyGUID);
-        yield return new CodeInstruction(OpCodes.Call, propertyChangeMethod);
         foreach (CodeInstruction instruction in instructions)
         {
-            yield return instruction;
+            if(instruction.opcode == OpCodes.Call)
+            {
+                yield return instruction;
+                yield return new CodeInstruction(OpCodes.Ldarg_0);
+                yield return new CodeInstruction(OpCodes.Call, propertyChangeMethod);
+            } else
+            {
+                yield return instruction;
+            }
         }
     }
 
-    public static void onPropertyChange(string a)
+    private static Dictionary<Component, NetworkedObject> cache = new Dictionary<Component, NetworkedObject>();
+
+    public static void onPropertyChange(object o)
     {
-        string[] bois = a.Split('$');
-        onPropertyChange(bois[0],bois[1]);
+        if (o != null)
+        {
+            if(o.GetType().IsSubclassOf(typeof(Component)))
+            {
+                cache.TryGetValue(((Component)o), out NetworkedObject netobj);
+                if (netobj == null)
+                {
+                    netobj = ((Component)o).GetComponent<NetworkedObject>();
+                    cache.Add(((Component)o), netobj);
+                }
+                Debug.Log(netobj.myID + "'s " + o.GetType().Name + " changed!");
+            }
+        }
+        //onPropertyChange(f.);
     }
     public static void onPropertyChange(string objectID, string propertyID)
     {

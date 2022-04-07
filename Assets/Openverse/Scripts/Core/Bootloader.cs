@@ -10,6 +10,7 @@ public class Bootloader : Singleton<Bootloader>
     public Harmony harmony;
     private Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
     private Dictionary<string, NetworkedObject> networkedObjects = new Dictionary<string, NetworkedObject>();
+    internal HarmonyMethod transpiler;
 
     private void Awake()
     {
