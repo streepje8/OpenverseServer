@@ -14,7 +14,9 @@ namespace Openverse.NetCode
             playerLocation,
             spawnObject,
             updateObject,
-            updateVariable
+            updateVariable,
+            transformObject,
+            addComponent
         }
         public enum ClientToServerId : ushort
         {

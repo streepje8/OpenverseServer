@@ -227,9 +227,7 @@ GameObject:
   - component: {fileID: 387371950}
   - component: {fileID: 387371949}
   - component: {fileID: 387371948}
-  - component: {fileID: 387371947}
   - component: {fileID: 387371946}
-  - component: {fileID: 387371951}
   m_Layer: 0
   m_Name: Testboi
   m_TagString: Untagged
@@ -250,20 +248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  isFinished: 0
---- !u!65 &387371947
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 387371945}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 3, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  supressWarnings: 1
 --- !u!23 &387371948
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -327,18 +312,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &387371951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 387371945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cff1ff7ea7e85ae4b95ee6618febcfaa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &418601134
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,7 +325,6 @@ GameObject:
   - component: {fileID: 418601138}
   - component: {fileID: 418601137}
   - component: {fileID: 418601136}
-  - component: {fileID: 418601135}
   m_Layer: 0
   m_Name: Testboi (1)
   m_TagString: Untagged
@@ -360,18 +332,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &418601135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 418601134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cff1ff7ea7e85ae4b95ee6618febcfaa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &418601136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,7 +345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  isFinished: 0
+  supressWarnings: 1
 --- !u!65 &418601137
 BoxCollider:
   m_ObjectHideFlags: 0

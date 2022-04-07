@@ -13,6 +13,6 @@ public class TestScriptBoi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        boxBoi.center = transform.position;
+        boxBoi.size = new Vector3((Mathf.Sin(Time.time) + 1) / 2f * 10f, (Mathf.Sin(Time.time * 2) + 1) / 2f * 10f, (Mathf.Sin(Time.time * 4) + 1) / 2f * 10f);
     }
 }
