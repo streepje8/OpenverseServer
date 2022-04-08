@@ -16,7 +16,8 @@ namespace Openverse.NetCode
             updateObject,
             updateVariable,
             transformObject,
-            addComponent
+            addComponent,
+            removeComponent
         }
         public enum ClientToServerId : ushort
         {

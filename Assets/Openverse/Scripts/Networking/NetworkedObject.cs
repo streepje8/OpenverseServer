@@ -39,6 +39,8 @@ public class NetworkedObject : MonoBehaviour
     private Vector3 lastPOS;
     private Quaternion lastRot;
     private Vector3 lastScale;
+    public List<string> myComponents = new List<string>();
+    private bool hasAwoken = false;
 
     private void Awake()
     {
@@ -47,6 +49,96 @@ public class NetworkedObject : MonoBehaviour
         lastPOS = transform.position;
         lastRot = transform.rotation;
         lastScale = transform.localScale;
+        foreach (Component c in gameObject.GetComponents(typeof(Component)))
+        {
+            if (AllowedComponents.allowedTypes.Contains(c.GetType()) && c.GetType() != typeof(Transform))
+            {
+                myComponents.Add(c.GetType().Name);
+            }
+            else
+            {
+                myComponents.Add("[NONET]" + c.GetType().Name);
+            }
+        }
+        hasAwoken = true;
+    }
+
+    public T AddComponentNetworked<T>()
+    {
+        if (typeof(T).IsSubclassOf(typeof(Component))) {
+            Component c = gameObject.AddComponent(typeof(T));
+            SyncComponents(true);
+            return (T)Convert.ChangeType(c,typeof(T));
+        }
+        Debug.LogError(typeof(T).Name + " is not a component!");
+        return default(T);
+    }
+
+    public void SyncComponents(bool syncAllProperties = false)
+    {
+        if (Application.isPlaying && hasAwoken)
+        {
+            Component[] components = gameObject.GetComponents(typeof(Component));
+            if (components.Length != myComponents.Count)
+            {
+                if (components.Length > myComponents.Count)
+                {
+                    foreach (Component c in components)
+                    {
+                        if (AllowedComponents.allowedTypes.Contains(c.GetType()) && c.GetType() != typeof(Transform))
+                        {
+                            if (!myComponents.Contains(c.GetType().Name))
+                            {
+                                myComponents.Add(c.GetType().Name);
+                                Metaserver.Instance.server.SendToAll(GetAddCompMessage(c));
+                            }
+                        }
+                        else
+                        {
+                            if (!myComponents.Contains("[NONET]" + c.GetType().Name))
+                            {
+                                myComponents.Add("[NONET]" + c.GetType().Name);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //Component removed
+                    for(int i = myComponents.Count - 1; i >= 0; i--)
+                    {
+                        string compname = myComponents[i];
+                        if (!compname.StartsWith("[NONET]"))
+                        {
+                            if (GetComponent(compname) == null)
+                            {
+                                Message remCompMessage = Message.Create(MessageSendMode.reliable, ServerToClientId.removeComponent);
+                                remCompMessage.Add(myID.ToString());
+                                remCompMessage.Add(compname);
+                                Metaserver.Instance.server.SendToAll(remCompMessage);
+                                myComponents.RemoveAt(i);
+                            }
+                        }
+                    }
+                }
+            }
+            if (syncAllProperties)
+            {
+                foreach (Component c in components)
+                {
+                    onPropertyChange(c);
+                }
+            }
+        }
+    }
+
+    public void SyncAllProperties()
+    {
+        Component[] components = gameObject.GetComponents(typeof(Component));
+        foreach (Component c in components)
+        {
+            onPropertyChange(c);
+        }
     }
 
     private void FixedUpdate()
@@ -172,111 +264,7 @@ public class NetworkedObject : MonoBehaviour
         {
             if (AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()) && myComponents[i].GetType() != typeof(Transform))
             {
-                Message addCompMessage = Message.Create(MessageSendMode.reliable, ServerToClientId.addComponent);
-                addCompMessage.Add(myID.ToString());
-                addCompMessage.Add(AllowedComponents.allowedTypesList.IndexOf(myComponents[i].GetType()));
-                foreach (var prop in myComponents[i].GetType().GetProperties())
-                {
-                    if (networkedPropertyTypes.Contains(prop.PropertyType) && prop.CanWrite)
-                    {
-                        bool success = false;
-                        //Couldn't make this a switch but would have loved to do so
-                        if (prop.PropertyType == typeof(string))
-                        {
-                            addCompMessage.Add(true);
-                            addCompMessage.Add(prop.Name);
-                            addCompMessage.Add((ushort)0);
-                            addCompMessage.Add((string)prop.GetValue(myComponents[i], null));
-                            success = true;
-                        }
-                        if (prop.PropertyType == typeof(float))
-                        {
-                            addCompMessage.Add(true);
-                            addCompMessage.Add(prop.Name);
-                            addCompMessage.Add((ushort)1);
-                            addCompMessage.Add((float)prop.GetValue(myComponents[i], null));
-                            success = true;
-                        }
-                        if (prop.PropertyType == typeof(int))
-                        {
-                            addCompMessage.Add(true);
-                            addCompMessage.Add(prop.Name);
-                            addCompMessage.Add((ushort)2);
-                            addCompMessage.Add((int)prop.GetValue(myComponents[i], null));
-                            success = true;
-                        }
-                        if (prop.PropertyType == typeof(bool))
-                        {
-                            addCompMessage.Add(true);
-                            addCompMessage.Add(prop.Name);
-                            addCompMessage.Add((ushort)3);
-                            addCompMessage.Add((bool)prop.GetValue(myComponents[i], null));
-                            success = true;
-                        }
-                        if (prop.PropertyType == typeof(Vector2))
-                        {
-                            addCompMessage.Add(true);
-                            addCompMessage.Add(prop.Name);
-                            addCompMessage.Add((ushort)4);
-                            addCompMessage.Add((Vector2)prop.GetValue(myComponents[i], null));
-                            success = true;
-                        }
-                        if (prop.PropertyType == typeof(Vector3))
-                        {
-                            addCompMessage.Add(true);
-                            addCompMessage.Add(prop.Name);
-                            addCompMessage.Add((ushort)5);
-                            addCompMessage.Add((Vector3)prop.GetValue(myComponents[i], null));
-                            success = true;
-                        }
-                        if (prop.PropertyType == typeof(Quaternion))
-                        {
-                            addCompMessage.Add(true);
-                            addCompMessage.Add(prop.Name);
-                            addCompMessage.Add((ushort)6);
-                            addCompMessage.Add((Quaternion)prop.GetValue(myComponents[i], null));
-                            success = true;
-                        }
-                        if (!success)
-                        {
-                            object value = prop.GetValue(myComponents[i], null);
-                            string name = "null";
-                            try
-                            {
-                                if (value != null && ((UnityEngine.Object)value).name != null)
-                                {
-                                    name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "");
-                                    bool foundInBundle = false;
-                                    foreach (UnityEngine.Object obj in Metaserver.Instance.allAssets)
-                                    {
-                                        if (obj.name == name)
-                                        {
-                                            foundInBundle = true;
-                                        }
-                                    }
-                                    if (foundInBundle)
-                                    {
-                                        addCompMessage.Add(true);
-                                        addCompMessage.Add(prop.Name);
-                                        addCompMessage.Add((ushort)7);
-                                        addCompMessage.Add(name);
-                                        PatchProperty(myComponents[i], prop);
-                                    }
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogException(e);
-                            }
-                        }
-                        else
-                        {
-                            PatchProperty(myComponents[i], prop);
-                        }
-                    }
-                }
-                addCompMessage.Add(false);
-                messages.Add(addCompMessage);
+                messages.Add(GetAddCompMessage(myComponents[i]));
             }
             else
             {
@@ -287,6 +275,115 @@ public class NetworkedObject : MonoBehaviour
             }
         }
         return messages;
+    }
+
+    public Message GetAddCompMessage(Component comp)
+    {
+        Message addCompMessage = Message.Create(MessageSendMode.reliable, ServerToClientId.addComponent);
+        addCompMessage.Add(myID.ToString());
+        addCompMessage.Add(AllowedComponents.allowedTypesList.IndexOf(comp.GetType()));
+        foreach (var prop in comp.GetType().GetProperties())
+        {
+            if (networkedPropertyTypes.Contains(prop.PropertyType) && prop.CanWrite)
+            {
+                bool success = false;
+                //Couldn't make this a switch but would have loved to do so
+                if (prop.PropertyType == typeof(string))
+                {
+                    addCompMessage.Add(true);
+                    addCompMessage.Add(prop.Name);
+                    addCompMessage.Add((ushort)0);
+                    addCompMessage.Add((string)prop.GetValue(comp, null));
+                    success = true;
+                }
+                if (prop.PropertyType == typeof(float))
+                {
+                    addCompMessage.Add(true);
+                    addCompMessage.Add(prop.Name);
+                    addCompMessage.Add((ushort)1);
+                    addCompMessage.Add((float)prop.GetValue(comp, null));
+                    success = true;
+                }
+                if (prop.PropertyType == typeof(int))
+                {
+                    addCompMessage.Add(true);
+                    addCompMessage.Add(prop.Name);
+                    addCompMessage.Add((ushort)2);
+                    addCompMessage.Add((int)prop.GetValue(comp, null));
+                    success = true;
+                }
+                if (prop.PropertyType == typeof(bool))
+                {
+                    addCompMessage.Add(true);
+                    addCompMessage.Add(prop.Name);
+                    addCompMessage.Add((ushort)3);
+                    addCompMessage.Add((bool)prop.GetValue(comp, null));
+                    success = true;
+                }
+                if (prop.PropertyType == typeof(Vector2))
+                {
+                    addCompMessage.Add(true);
+                    addCompMessage.Add(prop.Name);
+                    addCompMessage.Add((ushort)4);
+                    addCompMessage.Add((Vector2)prop.GetValue(comp, null));
+                    success = true;
+                }
+                if (prop.PropertyType == typeof(Vector3))
+                {
+                    addCompMessage.Add(true);
+                    addCompMessage.Add(prop.Name);
+                    addCompMessage.Add((ushort)5);
+                    addCompMessage.Add((Vector3)prop.GetValue(comp, null));
+                    success = true;
+                }
+                if (prop.PropertyType == typeof(Quaternion))
+                {
+                    addCompMessage.Add(true);
+                    addCompMessage.Add(prop.Name);
+                    addCompMessage.Add((ushort)6);
+                    addCompMessage.Add((Quaternion)prop.GetValue(comp, null));
+                    success = true;
+                }
+                if (!success)
+                {
+                    object value = prop.GetValue(comp, null);
+                    string name = "null";
+                    try
+                    {
+                        if (value != null && ((UnityEngine.Object)value).name != null)
+                        {
+                            name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "");
+                            bool foundInBundle = false;
+                            foreach (UnityEngine.Object obj in Metaserver.Instance.allAssets)
+                            {
+                                if (obj.name == name)
+                                {
+                                    foundInBundle = true;
+                                }
+                            }
+                            if (foundInBundle)
+                            {
+                                addCompMessage.Add(true);
+                                addCompMessage.Add(prop.Name);
+                                addCompMessage.Add((ushort)7);
+                                addCompMessage.Add(name);
+                                PatchProperty(comp, prop);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+                }
+                else
+                {
+                    PatchProperty(comp, prop);
+                }
+            }
+        }
+        addCompMessage.Add(false);
+        return addCompMessage;
     }
 
     private void PatchProperty(Component comp, PropertyInfo prop)
@@ -301,6 +398,7 @@ public class NetworkedObject : MonoBehaviour
             if (prop != null && prop.GetSetMethod() != null)
             {
                 MethodInfo setmet = prop.GetSetMethod();
+                Debug.Log(prop.GetSetMethod().Name);
                 if (setmet.IsDeclaredMember())
                 {
                     try
@@ -310,7 +408,8 @@ public class NetworkedObject : MonoBehaviour
                     }
                     catch (Exception e)
                     {
-                        Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
+                        if(!supressWarnings)
+                            Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
                     }
                 }
             }
