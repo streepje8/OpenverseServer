@@ -398,7 +398,6 @@ public class NetworkedObject : MonoBehaviour
             if (prop != null && prop.GetSetMethod() != null)
             {
                 MethodInfo setmet = prop.GetSetMethod();
-                Debug.Log(prop.GetSetMethod().Name);
                 if (setmet.IsDeclaredMember())
                 {
                     try
@@ -408,7 +407,7 @@ public class NetworkedObject : MonoBehaviour
                     }
                     catch (Exception e)
                     {
-                        if(!supressWarnings)
+                        if (!supressWarnings)
                             Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
                     }
                 }
@@ -437,19 +436,26 @@ public class NetworkedObject : MonoBehaviour
 
     public static void onPropertyChange(object o)
     {
-        if (o != null)
+        if (Application.isPlaying)
         {
-            if (o.GetType().IsSubclassOf(typeof(Component)))
+            if (o != null)
             {
-                cache.TryGetValue(((Component)o), out NetworkedObject netobj);
-                if (netobj == null)
+                if (o.GetType().IsSubclassOf(typeof(Component)))
                 {
-                    netobj = ((Component)o).GetComponent<NetworkedObject>();
-                    cache.Add((Component)o, netobj);
-                }
-                if (!netobj.toNetworkQueue.Contains((Component)o))
-                {
-                    netobj.toNetworkQueue.Add((Component)o);
+                    cache.TryGetValue(((Component)o), out NetworkedObject netobj);
+                    if (netobj == null)
+                    {
+                        netobj = ((Component)o).GetComponent<NetworkedObject>();
+                        if(netobj != null)
+                            cache.Add((Component)o, netobj);
+                    }
+                    if (netobj != null)
+                    {
+                        if (!netobj.toNetworkQueue.Contains((Component)o))
+                        {
+                            netobj.toNetworkQueue.Add((Component)o);
+                        }
+                    }
                 }
             }
         }

@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  supressWarnings: 0
+  supressWarnings: 1
   myComponents: []
 --- !u!108 &387371947
 Light:
@@ -395,7 +395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &418601136
 MonoBehaviour:
   m_ObjectHideFlags: 0
