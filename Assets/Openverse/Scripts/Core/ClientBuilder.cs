@@ -17,7 +17,7 @@ public class ClientBuilder : MonoBehaviour
 #if UNITY_EDITOR
         if (!SceneManager.GetSceneByPath(AssetDatabase.GetAssetPathsFromAssetBundle("clientscene")[0]).IsValid())
         {
-            EditorSceneManager.CloseScene(EditorSceneManager.GetActiveScene(), true);
+            //EditorSceneManager.CloseScene(EditorSceneManager.GetActiveScene(), true);
             EditorSceneManager.OpenScene(AssetDatabase.GetAssetPathsFromAssetBundle("clientscene")[0]);
         }
 #endif
@@ -37,7 +37,7 @@ public class ClientBuilder : MonoBehaviour
                                         BuildAssetBundleOptions.ForceRebuildAssetBundle,
                                         BuildTarget.StandaloneWindows);
 #if UNITY_EDITOR
-        EditorSceneManager.CloseScene(EditorSceneManager.GetActiveScene(), true);
+        //EditorSceneManager.CloseScene(EditorSceneManager.GetActiveScene(), true);
         EditorSceneManager.OpenScene(AssetDatabase.GetAssetPathsFromAssetBundle("serverscene")[0]);
 #endif
     }

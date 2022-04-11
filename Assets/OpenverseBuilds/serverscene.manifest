@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3168204011
+CRC: 2293577222
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0a322279a5f143dade95dc8b1d510006
+    Hash: 57fcf7ac85f28d6180dbcc9d5bd49aa2
   TypeTreeHash:
     serializedVersion: 2
-    Hash: f8fb5b91e414f9b3ceb8c1b54d3679fa
+    Hash: da79cf352ec180c481793e68dec1cea3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -15,17 +15,9 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
-- Class: 23
-  Script: {instanceID: 0}
 - Class: 28
   Script: {instanceID: 0}
-- Class: 33
-  Script: {instanceID: 0}
-- Class: 43
-  Script: {instanceID: 0}
 - Class: 48
-  Script: {instanceID: 0}
-- Class: 65
   Script: {instanceID: 0}
 - Class: 104
   Script: {instanceID: 0}
@@ -37,8 +29,6 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 9dbe1ce5153efb249b8fec12eb5b4590, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 3cfc9af5d4169424994e73d37755ec82, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: d8921e79665b0084b9209f504cb51db2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: e448fa5aec56946419dd94eb4812923e, type: 3}
 - Class: 114
@@ -52,5 +42,4 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Scenes/RootScene.unity
-Dependencies:
-- L:/MyGames/Unity/OpenverseServer/Assets/OpenverseBuilds/clientassets
+Dependencies: []

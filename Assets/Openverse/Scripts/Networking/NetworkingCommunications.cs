@@ -17,13 +17,15 @@ namespace Openverse.NetCode
             updateVariable,
             transformObject,
             addComponent,
-            removeComponent
+            removeComponent,
+            moveClientMoveable
         }
         public enum ClientToServerId : ushort
         {
             playerName = 1,
             vrPositions,
-            playerReady
+            playerReady,
+            moveClientMoveable
         }
 
     }

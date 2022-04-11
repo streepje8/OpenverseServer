@@ -39,7 +39,7 @@ public class NetworkedObject : MonoBehaviour
     private Vector3 lastPOS;
     private Quaternion lastRot;
     private Vector3 lastScale;
-    public List<string> myComponents = new List<string>();
+    private List<string> myComponents = new List<string>();
     private bool hasAwoken = false;
 
     private void Awake()

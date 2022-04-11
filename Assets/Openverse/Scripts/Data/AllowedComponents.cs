@@ -23,7 +23,8 @@ public class AllowedComponents : MonoBehaviour
         typeof(PostProcessProfile),
         typeof(PostProcessEffectSettings),
         typeof(ParticleSystem),
-        typeof(Rigidbody)
+        typeof(Rigidbody),
+        typeof(ClientMoveable)
     };
 
     public static List<Type> allowedTypesList = new List<Type>()
@@ -42,7 +43,8 @@ public class AllowedComponents : MonoBehaviour
         typeof(PostProcessProfile),
         typeof(PostProcessEffectSettings),
         typeof(ParticleSystem),
-        typeof(Rigidbody)
+        typeof(Rigidbody),
+        typeof(ClientMoveable)
     };
 
     public static void ScanAndRemoveInvalidScripts(GameObject go)

@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using static Openverse.NetCode.NetworkingCommunications;
 
 namespace Openverse.NetCode { 
     public class Metaserver : Singleton<Metaserver>
@@ -53,6 +55,9 @@ namespace Openverse.NetCode {
             Debug.Log("Looking at path: " + Application.dataPath + "/OpenverseBuilds/clientassets");
             clientAssets = AssetBundle.LoadFromFile(Application.dataPath + "/OpenverseBuilds/clientassets");
             allAssets = clientAssets.LoadAllAssets();
+            AssetBundle clientScene = AssetBundle.LoadFromFile(Application.dataPath + "/OpenverseBuilds/clientscene");
+            
+            SceneManager.LoadScene(clientScene.GetAllScenePaths()[0], LoadSceneMode.Additive);
 
             Debug.Log("Starting server...");
             server = new Server();
@@ -63,6 +68,7 @@ namespace Openverse.NetCode {
 
         private void FixedUpdate()
         {
+            SyncClientMoveables();
             server.Tick();
         }
 
@@ -88,6 +94,26 @@ namespace Openverse.NetCode {
         {
             if (PlayerConnection.List.ContainsKey(e.Id))
                 PlayerConnection.List[e.Id].Destroy();
+        }
+
+        private void SyncClientMoveables()
+        {
+            foreach(ClientMoveable cmv in ClientMoveable.ClientMoveables.Values)
+            {
+                //Network Positions
+                if (cmv.transform.position != cmv.lastPOS || cmv.transform.rotation != cmv.lastRot || cmv.transform.localScale != cmv.lastScale)
+                {
+                    Message transformUpdateMessage = Message.Create(cmv.mode, ServerToClientId.moveClientMoveable);
+                    transformUpdateMessage.Add(cmv.myID);
+                    transformUpdateMessage.Add(cmv.transform.position);
+                    transformUpdateMessage.Add(cmv.transform.rotation);
+                    transformUpdateMessage.Add(cmv.transform.localScale);
+                    cmv.lastPOS = cmv.transform.position;
+                    cmv.lastRot = cmv.transform.rotation;
+                    cmv.lastScale = cmv.transform.localScale;
+                    Instance.server.SendToAll(transformUpdateMessage);
+                }
+            }
         }
     }
 }
