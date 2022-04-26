@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+#if UNITY_EDITOR
 using UnityEditor.Callbacks;
 using UnityEditor;
+#endif
 
 namespace Sly
 {
+#if UNITY_EDITOR
     [CustomEditor(typeof(SlyScript))]
     public class SlyScriptEditor : Editor
     {
@@ -96,4 +99,5 @@ namespace Sly
             }
         }
     }
+#endif
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Sly
 {
+#if UNITY_EDITOR
     [CustomEditor(typeof(SlyScriptComponent))]
     public class SlyScriptComponentEditor : Editor
     {
@@ -113,4 +114,5 @@ namespace Sly
             }
         }
     }
+#endif
 }
