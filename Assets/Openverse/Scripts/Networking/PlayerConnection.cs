@@ -54,6 +54,7 @@ namespace Openverse.Core
             player.Username = username;
             player.myPlayer = Instantiate(Metaserver.Instance.settings.playerPrefab, spawnLocation, Quaternion.identity).GetComponent<VirtualPlayer>();
             player.myPlayer.name = $"VirtualPlayer {id} ({username})";
+            player.myPlayer.connection = player;
             player.SendSpawn();
             List.Add(player.Id, player);
         }
@@ -147,6 +148,16 @@ namespace Openverse.Core
             message.Add(myPlayer.transform.position);
             message.Add(myPlayer.transform.forward);
             Metaserver.Instance.server.SendToAll(message);
+        }
+
+        [MessageHandler((ushort)ClientToServerId.supplyInput)]
+        private static void RecieveInput(ushort fromClientId, Message message)
+        {
+            List.TryGetValue(fromClientId, out PlayerConnection player);
+            if (player != null)
+            {
+                player.myPlayer.InputRecieved(message);
+            }
         }
 
         [MessageHandler((ushort)ClientToServerId.moveClientMoveable)]
