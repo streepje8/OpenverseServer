@@ -1,89 +1,94 @@
-using HarmonyLib;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
-
-public class Bootloader : Singleton<Bootloader>
+namespace Openverse.Core
 {
-    public Harmony harmony;
-    private Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
-    private Dictionary<string, NetworkedObject> networkedObjects = new Dictionary<string, NetworkedObject>();
-    internal HarmonyMethod transpiler;
+    using HarmonyLib;
+    using Openverse.NetCode;
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using UnityEngine;
 
-    private void Awake()
+    public class Bootloader : Singleton<Bootloader>
     {
-        DontDestroyOnLoad(this);
-        Instance = this;
-        harmony = new Harmony("com.streep.openversepatch");
-        harmony.PatchAll();
-    }
+        public Harmony harmony;
+        private Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
+        private Dictionary<string, NetworkedObject> networkedObjects = new Dictionary<string, NetworkedObject>();
+        internal HarmonyMethod transpiler;
 
-    public void log(string v)
-    {
-        Debug.Log(v);
-    }
-
-    public string GetNetworkedObjectID(NetworkedObject networkedObject)
-    {
-        string result = Guid.NewGuid().ToString();
-        if(!networkedObjects.ContainsValue(networkedObject))
+        private void Awake()
         {
-            networkedObjects.Add(result, networkedObject);
-        } else
+            DontDestroyOnLoad(this);
+            Instance = this;
+            harmony = new Harmony("com.streep.openversepatch");
+            harmony.PatchAll();
+        }
+
+        public void log(string v)
         {
-            foreach(KeyValuePair<string, NetworkedObject> kvp in networkedObjects)
+            Debug.Log(v);
+        }
+
+        public string GetNetworkedObjectID(NetworkedObject networkedObject)
+        {
+            string result = Guid.NewGuid().ToString();
+            if (!networkedObjects.ContainsValue(networkedObject))
             {
-                if(kvp.Value == networkedObject)
+                networkedObjects.Add(result, networkedObject);
+            }
+            else
+            {
+                foreach (KeyValuePair<string, NetworkedObject> kvp in networkedObjects)
                 {
-                    result = kvp.Key;
+                    if (kvp.Value == networkedObject)
+                    {
+                        result = kvp.Key;
+                    }
                 }
             }
+            return result;
         }
-        return result;
-    }
 
-    public NetworkedObject GetNetworkedObject(string guid)
-    {
-        if(networkedObjects.ContainsKey(guid))
+        public NetworkedObject GetNetworkedObject(string guid)
         {
-            return networkedObjects[guid];
-        } else
-        {
-            return null;
-        }
-    }
-
-    public string GetPropertyID(PropertyInfo Property)
-    {
-        string result = Guid.NewGuid().ToString();
-        if (!properties.ContainsValue(Property))
-        {
-            properties.Add(result, Property);
-        }
-        else
-        {
-            foreach (KeyValuePair<string, PropertyInfo> kvp in properties)
+            if (networkedObjects.ContainsKey(guid))
             {
-                if (kvp.Value == Property)
-                {
-                    result = kvp.Key;
-                }
+                return networkedObjects[guid];
+            }
+            else
+            {
+                return null;
             }
         }
-        return result;
-    }
 
-    public PropertyInfo GetProperty(string guid)
-    {
-        if (properties.ContainsKey(guid))
+        public string GetPropertyID(PropertyInfo Property)
         {
-            return properties[guid];
+            string result = Guid.NewGuid().ToString();
+            if (!properties.ContainsValue(Property))
+            {
+                properties.Add(result, Property);
+            }
+            else
+            {
+                foreach (KeyValuePair<string, PropertyInfo> kvp in properties)
+                {
+                    if (kvp.Value == Property)
+                    {
+                        result = kvp.Key;
+                    }
+                }
+            }
+            return result;
         }
-        else
+
+        public PropertyInfo GetProperty(string guid)
         {
-            return null;
+            if (properties.ContainsKey(guid))
+            {
+                return properties[guid];
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

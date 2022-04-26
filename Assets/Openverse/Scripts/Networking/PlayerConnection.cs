@@ -1,15 +1,13 @@
-using Openverse.NetCode;
-using RiptideNetworking;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using UnityEngine;
-using static Openverse.NetCode.NetworkingCommunications;
-
-namespace Openverse.Core
+namespace Openverse.NetCode
 {
+    using Openverse.Core;
+    using RiptideNetworking;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using UnityEngine;
     public class PlayerConnection : MonoBehaviour
     {
         public static Dictionary<ushort, PlayerConnection> List { get; private set; } = new Dictionary<ushort, PlayerConnection>();

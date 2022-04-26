@@ -1,16 +1,14 @@
-using Openverse.Core;
-using Openverse.ScriptableObjects;
-using RiptideNetworking;
-using RiptideNetworking.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using static Openverse.NetCode.NetworkingCommunications;
-
-namespace Openverse.NetCode { 
+namespace Openverse.NetCode 
+{
+    using Openverse.ScriptableObjects;
+    using RiptideNetworking;
+    using RiptideNetworking.Utils;
+    using UnityEditor;
+    using UnityEngine;
+    using UnityEngine.SceneManagement;
+#if !UNITY_EDITOR
+    using System;
+#endif
     public class Metaserver : Singleton<Metaserver>
     {
         public OpenverseSettings settings;

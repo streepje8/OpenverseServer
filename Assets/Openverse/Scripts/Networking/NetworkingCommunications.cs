@@ -1,35 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Openverse.NetCode
 {
-    public class NetworkingCommunications : MonoBehaviour
+    public enum ServerToClientId : ushort
     {
-        public enum ServerToClientId : ushort
-        {
-            downloadWorld = 1,
-            openWorld,
-            spawnPlayer,
-            playerLocation,
-            spawnObject,
-            updateObject,
-            updateVariable,
-            transformObject,
-            addComponent,
-            removeComponent,
-            moveClientMoveable,
-            RequestInput
-        }
-        
-        public enum ClientToServerId : ushort
-        {
-            playerName = 1,
-            vrPositions,
-            playerReady,
-            moveClientMoveable,
-            supplyInput
-        }
+        downloadWorld = 1,
+        openWorld,
+        spawnPlayer,
+        playerLocation,
+        spawnObject,
+        updateObject,
+        updateVariable,
+        transformObject,
+        addComponent,
+        removeComponent,
+        moveClientMoveable,
+        RequestInput
+    }
 
+    public enum ClientToServerId : ushort
+    {
+        playerName = 1,
+        vrPositions,
+        playerReady,
+        moveClientMoveable,
+        supplyInput
     }
 }

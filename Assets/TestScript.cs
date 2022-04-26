@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using Openverse.Core;
+using Openverse.Input;
 using UnityEngine;
 
 public class TestScript : MonoBehaviour
@@ -12,7 +12,6 @@ public class TestScript : MonoBehaviour
         });
     }
 
-    // Update is called once per frame
     void Update()
     {
         myplayer.RequestInput<float>("Left:Trigger");
