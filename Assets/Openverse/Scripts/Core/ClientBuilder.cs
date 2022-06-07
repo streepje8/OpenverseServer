@@ -34,10 +34,11 @@ namespace Openverse.Core
             {
                 Directory.CreateDirectory(assetBundleDirectory);
             }
+#if UNITY_EDITOR
             BuildPipeline.BuildAssetBundles(assetBundleDirectory,
                                             BuildAssetBundleOptions.ForceRebuildAssetBundle,
-                                            BuildTarget.StandaloneWindows);
-#if UNITY_EDITOR
+                                           BuildTarget.StandaloneWindows64);
+            Debug.Log("FINISHED BUILDING!");
             //EditorSceneManager.CloseScene(EditorSceneManager.GetActiveScene(), true);
             EditorSceneManager.OpenScene(AssetDatabase.GetAssetPathsFromAssetBundle("serverscene")[0]);
 #endif
