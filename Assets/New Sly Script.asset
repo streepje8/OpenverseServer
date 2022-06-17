@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3802eb236736546b2604a9fbf83989, type: 3}
+  m_Name: New Sly Script
+  m_EditorClassIdentifier: 
+  sourceCode: "sly CoolSly {\r\n\r\n\tfloat meh = 80;\r\n\t\r\n\tvoid Update() {\r\n\t\tRotate(meh,0f,0f);\r\n\t}\r\n\r\n}"
+  compiledClass:
+    name: CoolSly
+    variables:
+    - name: meh
+      type: 2
+      value: 80
+    functions:
+    - className: CoolSly
+      name: Update
+      returntype: 6
+      locals: []
+      parameters: []
+      invocations:
+      - isSystemInvocation: 1
+        executionFunction: 
+        name: Rotate
+        Myparameters:
+        - name: 
+          value: meh
+          isVariable: 1
+          type: 4
+        - name: 
+          value: 0
+          isVariable: 0
+          type: 2
+        - name: 
+          value: 0
+          isVariable: 0
+          type: 2
