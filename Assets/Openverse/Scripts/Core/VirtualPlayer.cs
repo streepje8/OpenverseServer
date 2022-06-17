@@ -66,37 +66,37 @@ namespace Openverse.Core
             {
                 case 0:
                     Tuple<Type, string> key = new Tuple<Type, string>(typeof(bool), packet.GetString());
-                    if (lookupTable.ContainsKey(key))
+                    if (lookupTable.TryGetValue(key, out Action<InputValue> action))
                     {
-                        lookupTable[key].Invoke(new InputValue(packet.GetBool()));
+                        action.Invoke(new InputValue(packet.GetBool()));
                     }
                     break;
                 case 1:
                     key = new Tuple<Type, string>(typeof(int), packet.GetString());
-                    if (lookupTable.ContainsKey(key))
+                    if (lookupTable.TryGetValue(key, out action))
                     {
-                        lookupTable[key].Invoke(new InputValue(packet.GetInt()));
+                        action.Invoke(new InputValue(packet.GetInt()));
                     }
                     break;
                 case 2:
                     key = new Tuple<Type, string>(typeof(float), packet.GetString());
-                    if (lookupTable.ContainsKey(key))
+                    if (lookupTable.TryGetValue(key, out action))
                     {
-                        lookupTable[key].Invoke(new InputValue(packet.GetFloat()));
+                        action.Invoke(new InputValue(packet.GetFloat()));
                     }
                     break;
                 case 3:
                     key = new Tuple<Type, string>(typeof(Vector2), packet.GetString());
-                    if (lookupTable.ContainsKey(key))
+                    if (lookupTable.TryGetValue(key, out action))
                     {
-                        lookupTable[key].Invoke(new InputValue(packet.GetVector2()));
+                        action.Invoke(new InputValue(packet.GetVector2()));
                     }
                     break;
                 case 4:
                     key = new Tuple<Type, string>(typeof(Quaternion), packet.GetString());
-                    if (lookupTable.ContainsKey(key))
+                    if (lookupTable.TryGetValue(key, out action))
                     {
-                        lookupTable[key].Invoke(new InputValue(packet.GetQuaternion()));
+                        action.Invoke(new InputValue(packet.GetQuaternion()));
                     }
                     break;
             }

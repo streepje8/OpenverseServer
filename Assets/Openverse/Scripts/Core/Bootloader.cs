@@ -53,10 +53,7 @@ namespace Openverse.Core
             {
                 return networkedObjects[guid];
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public string GetPropertyID(PropertyInfo Property)
@@ -85,10 +82,7 @@ namespace Openverse.Core
             {
                 return properties[guid];
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }
