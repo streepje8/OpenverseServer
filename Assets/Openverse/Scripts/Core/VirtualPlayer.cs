@@ -120,7 +120,7 @@ namespace Openverse.Input
         {
             if (typeof(T) == value.GetType())
                 return (T)value;
-            throw new Exception("InputValue is not of type: " + typeof(T).Name);
+            throw new ArgumentOutOfRangeException("InputValue is not of type: " + typeof(T).Name);
         }
     }
 }
