@@ -38,10 +38,10 @@ namespace Openverse.Core
 
         public void RequestInput<T>(string name)
         {
-            if (typeToId.ContainsKey(typeof(T)))
+            if (typeToId.TryGetValue(typeof(T), out short value))
             {
                 Message request = Message.Create(MessageSendMode.unreliable, ServerToClientId.RequestInput);
-                request.Add(typeToId[typeof(T)]);
+                request.Add(value);
                 request.Add(name);
                 Tuple<Type, string> packetKey = new Tuple<Type, string>(typeof(T), name);
                 if (!packetQueue.ContainsKey(packetKey))
