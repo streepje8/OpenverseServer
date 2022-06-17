@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Openverse.ScriptableObjects { 
@@ -10,6 +8,5 @@ namespace Openverse.ScriptableObjects {
         public string serverName;
         public ushort ServerPort;
         public ushort playerLimit;
-
     }
 }

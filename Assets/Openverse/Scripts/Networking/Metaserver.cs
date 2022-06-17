@@ -13,8 +13,8 @@ namespace Openverse.NetCode
     {
         public OpenverseSettings settings;
         public Server server;
-        public AssetBundle clientAssets;
-        public UnityEngine.Object[] allAssets;
+        [HideInInspector]public AssetBundle clientAssets;
+        [HideInInspector]public UnityEngine.Object[] allAssets;
 
         public void OnValidate()
         {
