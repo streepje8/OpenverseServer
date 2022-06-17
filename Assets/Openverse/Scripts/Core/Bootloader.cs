@@ -49,9 +49,9 @@ namespace Openverse.Core
 
         public NetworkedObject GetNetworkedObject(string guid)
         {
-            if (networkedObjects.ContainsKey(guid))
+            if (networkedObjects.TryGetValue(guid, out NetworkedObject value))
             {
-                return networkedObjects[guid];
+                return value;
             }
             return null;
         }
@@ -78,9 +78,9 @@ namespace Openverse.Core
 
         public PropertyInfo GetProperty(string guid)
         {
-            if (properties.ContainsKey(guid))
+            if (properties.TryGetValue(guid, out PropertyInfo value))
             {
-                return properties[guid];
+                return value;
             }
             return null;
         }

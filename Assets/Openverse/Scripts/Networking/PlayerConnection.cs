@@ -65,7 +65,7 @@ namespace Openverse.NetCode
 
             //Write them to packets
             //Send the bois
-            Message message;
+            Message message = null;
             foreach(string file in files)
             {
                 if(Path.GetExtension(file).Length < 1 && !Directory.Exists(file))
