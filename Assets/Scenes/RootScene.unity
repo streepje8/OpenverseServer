@@ -262,6 +262,142 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1208671264
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1208671266}
+  - component: {fileID: 1208671265}
+  m_Layer: 0
+  m_Name: SlyTestBoi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1208671265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208671264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36079c27cc163294596597eae723198b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Script: {fileID: 11400000, guid: 45497df7e96d2a843a9d8dae2ff5966a, type: 2}
+  instance:
+    type:
+      name: CoolSly
+      variables:
+      - name: meh
+        type: 2
+        value: 80
+      functions:
+      - className: CoolSly
+        name: Update
+        returntype: 6
+        locals: []
+        parameters: []
+        invocations:
+        - isSystemInvocation: 1
+          executionFunction: 
+          name: Rotate
+          Myparameters:
+          - name: 
+            value: meh
+            isVariable: 1
+            type: 4
+          - name: 
+            value: 0
+            isVariable: 0
+            type: 2
+          - name: 
+            value: 0
+            isVariable: 0
+            type: 2
+    variables:
+    - name: meh
+      type: 2
+      value: 80
+    functions: []
+  runtimeInstance:
+    type:
+      name: Undefined
+      variables: []
+      functions: []
+    variables: []
+    functions: []
+  hasCompiled: 1
+--- !u!4 &1208671266
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208671264}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1219987083
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1219987085}
+  - component: {fileID: 1219987084}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1219987084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219987083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38158201553a512438159c0818b0ade0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  myID: 2b50c24f-6571-4c13-b0dd-97f54cc680b9
+  autoSync: 0
+  lastPOS: {x: 0, y: 0, z: 0}
+  lastRot: {x: 0, y: 0, z: 0, w: 0}
+  lastScale: {x: 0, y: 0, z: 0}
+--- !u!4 &1219987085
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219987083}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4782103195078854730
 PrefabInstance:
   m_ObjectHideFlags: 0
