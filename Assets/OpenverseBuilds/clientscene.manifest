@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2214107451
+CRC: 3913137826
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: fffa4860bb9d086ffcc2fd0eba2b523c
+    Hash: 07ddbdbf053b1abfb4efe0d0262e9978
   TypeTreeHash:
     serializedVersion: 2
     Hash: f4d31f1ffb6323906c5a8627afb4523a
@@ -46,4 +46,5 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Scenes/ClientScene.unity
-Dependencies: []
+Dependencies:
+- L:/MyGames/Unity/OpenverseServer/Assets/OpenverseBuilds/clientassets

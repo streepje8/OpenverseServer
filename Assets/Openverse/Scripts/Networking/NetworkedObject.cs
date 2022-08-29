@@ -10,23 +10,30 @@ namespace Openverse.NetCode
     using System.Reflection.Emit;
     using UnityEngine;
 
+    public enum DirtyState
+    {
+        Clean,
+        Dirty
+    }
+
     public class NetworkedObject : MonoBehaviour
     {
         public MessageSendMode mode = MessageSendMode.unreliable;
+        public DirtyState NetworkedState = DirtyState.Clean; //Allow manual dirty marking for the inspector, there is no need to set this when updating via code since the openverse can detect that for you and only network that change!
         public Guid myID { get; private set; }
         public bool isFinished { get; private set; }
         public HashSet<Type> networkedPropertyTypes { get; private set; } = new HashSet<Type>
-    {
-        typeof(string),
-        typeof(float),
-        typeof(int),
-        typeof(bool),
-        typeof(Vector3),
-        typeof(Vector2),
-        typeof(Quaternion),
-        typeof(Mesh),
-        typeof(Material)
-    };
+        {
+            typeof(string),
+            typeof(float),
+            typeof(int),
+            typeof(bool),
+            typeof(Vector3),
+            typeof(Vector2),
+            typeof(Quaternion),
+            typeof(Mesh),
+            typeof(Material)
+        };
         public bool supressWarnings = true;
 
         public static Dictionary<Guid, NetworkedObject> NetworkedObjects = new Dictionary<Guid, NetworkedObject>();
@@ -223,6 +230,13 @@ namespace Openverse.NetCode
                     }
                 }
                 toNetworkQueue.RemoveAt(i);
+            }
+
+            //Check Dirty State
+            if(NetworkedState == DirtyState.Dirty)
+            {
+                SyncComponents(true);
+                NetworkedState = DirtyState.Clean;
             }
         }
 
