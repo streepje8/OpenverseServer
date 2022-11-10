@@ -5,8 +5,10 @@ namespace Openverse.ScriptableObjects {
     {
         public GameObject playerPrefab;
         public GameObject connectionPrefab;
+        public GameObject webServerPrefab;
         public string serverName;
-        public ushort ServerPort;
+        public ushort serverPort;
+        public ushort webServerPort;
         public ushort playerLimit;
     }
 }

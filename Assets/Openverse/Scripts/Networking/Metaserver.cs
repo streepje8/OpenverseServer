@@ -13,6 +13,7 @@ namespace Openverse.NetCode
     {
         public OpenverseSettings settings;
         public Server server;
+        public WebServer webServer;
         [HideInInspector]public AssetBundle clientAssets;
         [HideInInspector]public UnityEngine.Object[] allAssets;
 
@@ -61,7 +62,12 @@ namespace Openverse.NetCode
             server = new Server();
             server.ClientConnected += NewPlayerConnected;
             server.ClientDisconnected += PlayerLeft;
-            server.Start(settings.ServerPort, settings.playerLimit);
+            
+            
+            //Start both servers
+            webServer = Instantiate(settings.webServerPrefab,Vector3.zero,Quaternion.identity).GetComponent<WebServer>();
+            webServer.StartServ(settings);
+            server.Start(settings.serverPort, settings.playerLimit);
         }
 
         private void FixedUpdate()

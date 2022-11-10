@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 1790699045769520302, guid: 92cbe3ae43a197b43bd1c8f1bbce889d, type: 3}
   connectionPrefab: {fileID: 7158885476615939179, guid: dc0a3e4cbbb0d864c8836e22402a97d8, type: 3}
+  webServerPrefab: {fileID: 9101026803968016134, guid: b403e1139ce921f42b9518a6537a64b3, type: 3}
   serverName: Openverse_HubServer
-  ServerPort: 7777
+  serverPort: 7777
+  webServerPort: 8080
   playerLimit: 10
