@@ -19,3 +19,5 @@ MonoBehaviour:
   serverPort: 7777
   webServerPort: 8080
   playerLimit: 10
+  iconURL: https://wezzel.nl/openverse/assets/img/openverselogo.png
+  serverDescription: New Openverse Server

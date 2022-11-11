@@ -1,6 +1,7 @@
 namespace Openverse.NetCode 
 {
-    using Openverse.ScriptableObjects;
+    using Web;
+    using ScriptableObjects;
     using RiptideNetworking;
     using RiptideNetworking.Utils;
     using UnityEditor;

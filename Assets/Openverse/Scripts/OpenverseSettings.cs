@@ -10,5 +10,7 @@ namespace Openverse.ScriptableObjects {
         public ushort serverPort;
         public ushort webServerPort;
         public ushort playerLimit;
+        public string iconURL = "https://wezzel.nl/openverse/assets/img/openverselogo.png";
+        public string serverDescription = "New Openverse Server";
     }
 }
