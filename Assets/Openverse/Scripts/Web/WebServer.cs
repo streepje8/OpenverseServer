@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Openverse.Data;
 
@@ -57,7 +58,7 @@ namespace Openverse.Web
             response.Description = settings.serverDescription;
             RefreshHashes();
             Debug.Log("(WEBSERVER) Webserver Started On Port: " + settings.webServerPort);
-            HandleIncomingConnections().
+            HandleIncomingConnectionsAsync().
                 ContinueWith(t => Debug.LogException(t.Exception),
                     TaskContinuationOptions.OnlyOnFaulted);
         }
@@ -75,7 +76,7 @@ namespace Openverse.Web
             hashes.ServerScene = GetHashFromManifest(path + "/serverscene.manifest");
         }
 
-        public string GetHashFromManifest(string path)
+        private string GetHashFromManifest(string path)
         {
             foreach (string str in File.ReadAllLines(path))
             {
@@ -86,10 +87,10 @@ namespace Openverse.Web
                 }
             }
 
-            return null;
+            return "NULL";
         }
 
-            public async Task HandleIncomingConnections()
+        public async Task HandleIncomingConnectionsAsync()
         {
             isActive = true;
 
@@ -109,18 +110,18 @@ namespace Openverse.Web
 
                 if (req.Url.AbsolutePath.Equals("/", StringComparison.OrdinalIgnoreCase))
                 {
-                    await RespondJson(resp, response);
+                    await RespondJsonAsync(resp, response);
                     hasResponded = true;
                 }
                 if (req.Url.AbsolutePath.Equals("/hashes", StringComparison.OrdinalIgnoreCase))
                 {
-                    await RespondJson(resp, hashes);
+                    await RespondJsonAsync(resp, hashes);
                     hasResponded = true;
                 }
 
                 if (!hasResponded)
                 {
-                    await RespondString(resp, "Invalid Request", "text/html");
+                    await RespondStringAsync(resp, "Invalid Request", "text/html");
                 }
                 resp.Close();
             }
@@ -129,12 +130,12 @@ namespace Openverse.Web
             listener = null;
         }
 
-        private async Task RespondJson(HttpListenerResponse resp,System.Object reply)
+        private async Task RespondJsonAsync(HttpListenerResponse resp,System.Object reply)
         {
-            await RespondString(resp,JsonConvert.SerializeObject(reply,Formatting.Indented), "text/json");
+            await RespondStringAsync(resp,JsonConvert.SerializeObject(reply,Formatting.Indented), "text/json");
         }
 
-        private async Task RespondString(HttpListenerResponse resp, string reply, string ContentType)
+        private async Task RespondStringAsync(HttpListenerResponse resp, string reply, string ContentType)
         {
             byte[] data = Encoding.UTF8.GetBytes(reply);
             resp.ContentType = ContentType;
@@ -143,8 +144,7 @@ namespace Openverse.Web
 
             await resp.OutputStream.WriteAsync(data, 0, data.Length);
         }
-
-            public void StopServ()
+        public void StopServ()
         {
             isActive = false;
         }
