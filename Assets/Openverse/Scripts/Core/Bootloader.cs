@@ -50,7 +50,7 @@ namespace Openverse.Core
         }
 
         [CanBeNull]
-        public NetworkedObject GetNetworkedObject(string guid)
+        public NetworkedObject? GetNetworkedObject(string guid)
         {
             if (networkedObjects.TryGetValue(guid, out NetworkedObject value))
             {
@@ -80,7 +80,7 @@ namespace Openverse.Core
         }
 
         [CanBeNull]
-        public PropertyInfo GetProperty(string guid)
+        public PropertyInfo? GetProperty(string guid)
         {
             if (properties.TryGetValue(guid, out PropertyInfo value))
             {
