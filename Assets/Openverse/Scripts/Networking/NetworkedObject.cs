@@ -365,7 +365,7 @@ namespace Openverse.NetCode
                         string name = "null";
                         try
                         {
-                            if (value != null && ((UnityEngine.Object)value).name != null)
+                            if (value != null)
                             {
                                 name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "");
                                 bool foundInBundle = false;
@@ -386,7 +386,7 @@ namespace Openverse.NetCode
                                 }
                             }
                         }
-                        catch (Exception e)
+                        catch (InvalidCastException e)
                         {
                             Debug.LogException(e);
                         }
@@ -420,7 +420,7 @@ namespace Openverse.NetCode
                             Bootloader.Instance.harmony.Patch(setmet, transpiler: new HarmonyMethod(typeof(NetworkedObject).GetMethod("Transpiler", BindingFlags.NonPublic | BindingFlags.Static)));
                             patched.Add(comp.GetType() + "&&" + prop.Name);
                         }
-                        catch (Exception e)
+                        catch (Exception e) //Has to be generic :(
                         {
                             if (!supressWarnings)
                                 Debug.LogWarning("Property " + prop.Name + " can not be networked in realtime, network it manually when making changes. Reason: " + e.Message);
