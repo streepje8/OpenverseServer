@@ -265,27 +265,27 @@ namespace Openverse.NetCode
             createMessage.Add(transform.localScale);
             createMessage.Add(gameObject.name);
             messages.Add(createMessage);
-            Component[] myComponents = gameObject.GetComponents<Component>();
+            Component[] grabbedComponents = gameObject.GetComponents<Component>();
             int nonNetworkedComps = 0;
-            for (int i = 0; i < myComponents.Length; i++)
+            for (int i = 0; i < grabbedComponents.Length; i++)
             {
-                if (!AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()) || myComponents[i].GetType() == typeof(Transform))
+                if (!AllowedComponents.allowedTypes.Contains(grabbedComponents[i].GetType()) || grabbedComponents[i].GetType() == typeof(Transform))
                 {
                     nonNetworkedComps++;
                 }
             }
             //createMessage.Add(myComponents.Length - nonNetworkedComps);
-            for (int i = 0; i < myComponents.Length; i++)
+            for (int i = 0; i < grabbedComponents.Length; i++)
             {
-                if (AllowedComponents.allowedTypes.Contains(myComponents[i].GetType()) && myComponents[i].GetType() != typeof(Transform))
+                if (AllowedComponents.allowedTypes.Contains(grabbedComponents[i].GetType()) && grabbedComponents[i].GetType() != typeof(Transform))
                 {
-                    messages.Add(GetAddCompMessage(myComponents[i]));
+                    messages.Add(GetAddCompMessage(grabbedComponents[i]));
                 }
                 else
                 {
-                    if (myComponents[i]?.GetType() != typeof(NetworkedObject) && myComponents[i].GetType() != typeof(Transform))
+                    if (grabbedComponents[i]?.GetType() != typeof(NetworkedObject) && grabbedComponents[i].GetType() != typeof(Transform))
                     {
-                        Debug.LogWarning("The component of type " + myComponents[i].GetType().Name + " will not be networked to the client!");
+                        Debug.LogWarning("The component of type " + grabbedComponents[i].GetType().Name + " will not be networked to the client!");
                     }
                 }
             }

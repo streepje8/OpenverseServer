@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+
 namespace Openverse.Core
 {
     using HarmonyLib;
@@ -47,6 +49,7 @@ namespace Openverse.Core
             return result;
         }
 
+        [CanBeNull]
         public NetworkedObject GetNetworkedObject(string guid)
         {
             if (networkedObjects.TryGetValue(guid, out NetworkedObject value))
@@ -76,6 +79,7 @@ namespace Openverse.Core
             return result;
         }
 
+        [CanBeNull]
         public PropertyInfo GetProperty(string guid)
         {
             if (properties.TryGetValue(guid, out PropertyInfo value))
