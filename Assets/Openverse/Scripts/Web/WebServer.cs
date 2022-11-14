@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -123,7 +124,7 @@ namespace Openverse.Web
 
                 if (req.Url.AbsolutePath.ToLower().StartsWith("/file"))
                 {
-                    string file = req.Url.AbsolutePath.Replace("/file/", "").ToUpper();
+                    string file = req.Url.AbsolutePath.Replace("/file/", "").ToUpper(new CultureInfo("en-US",false));
                     string path = Directory.GetCurrentDirectory();
                     #if UNITY_EDITOR
                     path += "/Assets";
@@ -163,23 +164,20 @@ namespace Openverse.Web
                 resp.ContentLength64 = fs.Length;
                 resp.SendChunked = false;
                 resp.ContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
+                resp.StatusCode = (int)HttpStatusCode.OK;
+                resp.StatusDescription = "OK";
                 resp.AddHeader("Content-disposition", "attachment; filename=" + filename);
-
                 byte[] buffer = new byte[64 * 1024];
-                int read;
                 using (BinaryWriter bw = new BinaryWriter(resp.OutputStream))
                 {
+                    int read = 0;
                     while ((read = fs.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         bw.Write(buffer, 0, read);
                         bw.Flush(); //seems to have no effect
                     }
-
                     bw.Close();
                 }
-
-                resp.StatusCode = (int)HttpStatusCode.OK;
-                resp.StatusDescription = "OK";
             }
         }
 
