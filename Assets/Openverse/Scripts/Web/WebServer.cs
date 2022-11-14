@@ -102,11 +102,13 @@ namespace Openverse.Web
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
                 
-                //Temp for debugging
-                Debug.Log(req.Url.ToString());
-                Debug.Log(req.HttpMethod);
-                Debug.Log(req.UserHostName);
-                Debug.Log(req.UserAgent);
+                /*
+                These were for debugging purposes and may now vanish
+                / Debug.Log(req.Url.ToString());
+                / Debug.Log(req.HttpMethod);
+                / Debug.Log(req.UserHostName);
+                / Debug.Log(req.UserAgent);
+                */
 
                 bool hasResponded = false;
 
