@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Openverse.Data;
@@ -38,9 +39,9 @@ namespace Openverse.Web
     public class WebServer : MonoBehaviour
     {
         public HttpListener listener { get; private set; }
-        public bool isActive = false;
-        public OpenverseServerInfoResponse response = new OpenverseServerInfoResponse();
-        private FileHashes hashes = new FileHashes();
+        public bool isActive;
+        public OpenverseServerInfoResponse info;
+        private FileHashes hashes;
         private string url = "http://localhost:8080";
 
         private OpenverseSettings openverseSettings;
@@ -51,11 +52,11 @@ namespace Openverse.Web
             listener = new HttpListener();
             listener.Prefixes.Add(url);
             listener.Start();
-            response.OpenverseServerPort = settings.serverPort;
-            response.OpenverseServerName = settings.serverName;
-            response.ProtocolVersion = GlobalData.ProtocolVersion;
-            response.IconURL = settings.iconURL;
-            response.Description = settings.serverDescription;
+            info.OpenverseServerPort = settings.serverPort;
+            info.OpenverseServerName = settings.serverName;
+            info.ProtocolVersion = GlobalData.ProtocolVersion;
+            info.IconURL = settings.iconURL;
+            info.Description = settings.serverDescription;
             RefreshHashes();
             Debug.Log("(WEBSERVER) Webserver Started On Port: " + settings.webServerPort);
             HandleIncomingConnectionsAsync().
@@ -110,24 +111,76 @@ namespace Openverse.Web
 
                 if (req.Url.AbsolutePath.Equals("/", StringComparison.OrdinalIgnoreCase))
                 {
-                    await RespondJsonAsync(resp, response);
+                    await RespondJsonAsync(resp, this.info);
                     hasResponded = true;
                 }
+                
                 if (req.Url.AbsolutePath.Equals("/hashes", StringComparison.OrdinalIgnoreCase))
                 {
                     await RespondJsonAsync(resp, hashes);
                     hasResponded = true;
                 }
 
-                if (!hasResponded)
+                if (req.Url.AbsolutePath.ToLower().StartsWith("/file"))
                 {
-                    await RespondStringAsync(resp, "Invalid Request", "text/html");
+                    string file = req.Url.AbsolutePath.Replace("/file/", "").ToUpper();
+                    string path = Directory.GetCurrentDirectory();
+                    #if UNITY_EDITOR
+                    path += "/Assets";
+                    #endif
+                    path += "/OpenverseBuilds";
+                    switch (file)
+                    {
+                        case "CLIENTASSETS":
+                            RespondFile(resp, path + "/clientassets");
+                            hasResponded = true;
+                            break;
+                        case "CLIENTSCENE":
+                            RespondFile(resp, path + "/clientscene");
+                            hasResponded = true;
+                            break;
+                        case "OPENVERSEBUILDS":
+                            RespondFile(resp, path + "/openversebuilds");
+                            hasResponded = true;
+                            break;
+                    }
                 }
+
+                if (!hasResponded) await RespondStringAsync(resp, "Invalid Request", "text/html");
                 resp.Close();
             }
 
             listener.Close();
             listener = null;
+        }
+
+        //Borrowed from https://stackoverflow.com/questions/13385633/serving-large-files-with-c-sharp-httplistener might have to be asynced later
+        private void RespondFile(HttpListenerResponse resp, string testpath)
+        {
+            using (FileStream fs = File.OpenRead(testpath))
+            {
+                string filename = Path.GetFileName(testpath);
+                resp.ContentLength64 = fs.Length;
+                resp.SendChunked = false;
+                resp.ContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
+                resp.AddHeader("Content-disposition", "attachment; filename=" + filename);
+
+                byte[] buffer = new byte[64 * 1024];
+                int read;
+                using (BinaryWriter bw = new BinaryWriter(resp.OutputStream))
+                {
+                    while ((read = fs.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        bw.Write(buffer, 0, read);
+                        bw.Flush(); //seems to have no effect
+                    }
+
+                    bw.Close();
+                }
+
+                resp.StatusCode = (int)HttpStatusCode.OK;
+                resp.StatusDescription = "OK";
+            }
         }
 
         private async Task RespondJsonAsync(HttpListenerResponse resp,System.Object reply)
