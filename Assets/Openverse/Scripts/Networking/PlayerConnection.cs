@@ -57,6 +57,7 @@ namespace Openverse.NetCode
             List.Add(player.Id, player);
         }
 
+        /*
         public static void SendMetaverseWorld(ushort toPlayer)
         {
             //Read the bunde files
@@ -94,7 +95,8 @@ namespace Openverse.NetCode
             message.Add("EOF");
             Metaserver.Instance.server.Send(message, toPlayer);
         }
-
+        */
+        
         private Stack<NetworkedObject> toSendObjects = new Stack<NetworkedObject>();
 
         public void SendNetworkedObjects()
@@ -172,13 +174,10 @@ namespace Openverse.NetCode
                 moveable.lastScale = moveable.transform.localScale;
             }
         }
-
+        
         [MessageHandler((ushort)ClientToServerId.playerName)]
         private static void PlayerName(ushort fromClientId, Message message)
         {
-            SendMetaverseWorld(fromClientId);
-            Message OPWmessage = Message.Create(MessageSendMode.reliable, ServerToClientId.openWorld);
-            Metaserver.Instance.server.Send(OPWmessage, fromClientId);
             Spawn(fromClientId, message.GetString());
         }
 
@@ -187,6 +186,7 @@ namespace Openverse.NetCode
         {
             if (PlayerConnection.List.TryGetValue(fromClientId, out PlayerConnection plc))
             {
+                Metaserver.Instance.SyncClientMoveablesForce();
                 plc.SendNetworkedObjects();
             }
         }

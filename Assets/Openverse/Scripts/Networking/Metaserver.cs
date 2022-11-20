@@ -110,14 +110,32 @@ namespace Openverse.NetCode
                 {
                     Message transformUpdateMessage = Message.Create(cmv.mode, ServerToClientId.moveClientMoveable);
                     transformUpdateMessage.Add(cmv.myID);
-                    transformUpdateMessage.Add(cmv.transform.position);
-                    transformUpdateMessage.Add(cmv.transform.rotation);
-                    transformUpdateMessage.Add(cmv.transform.localScale);
-                    cmv.lastPOS = cmv.transform.position;
-                    cmv.lastRot = cmv.transform.rotation;
-                    cmv.lastScale = cmv.transform.localScale;
+                    var cmvTransform = cmv.transform;
+                    transformUpdateMessage.Add(cmvTransform.position);
+                    transformUpdateMessage.Add(cmvTransform.rotation);
+                    transformUpdateMessage.Add(cmvTransform.localScale);
+                    cmv.lastPOS = cmvTransform.position;
+                    cmv.lastRot = cmvTransform.rotation;
+                    cmv.lastScale = cmvTransform.localScale;
                     Instance.server.SendToAll(transformUpdateMessage);
                 }
+            }
+        }
+        
+        public void SyncClientMoveablesForce()
+        {
+            foreach(ClientMoveable cmv in ClientMoveable.ClientMoveables.Values)
+            {
+                Message transformUpdateMessage = Message.Create(cmv.mode, ServerToClientId.moveClientMoveable);
+                transformUpdateMessage.Add(cmv.myID);
+                var cmvTransform = cmv.transform;
+                transformUpdateMessage.Add(cmvTransform.position);
+                transformUpdateMessage.Add(cmvTransform.rotation);
+                transformUpdateMessage.Add(cmvTransform.localScale);
+                cmv.lastPOS = cmvTransform.position;
+                cmv.lastRot = cmvTransform.rotation;
+                cmv.lastScale = cmvTransform.localScale;
+                Instance.server.SendToAll(transformUpdateMessage);
             }
         }
     }

@@ -39,8 +39,7 @@ namespace Openverse.NetCode
         public static Dictionary<Guid, NetworkedObject> NetworkedObjects = new Dictionary<Guid, NetworkedObject>();
         public static List<string> patched = new List<string>();
         private static MethodInfo propertyChangeMethod = SymbolExtensions.GetMethodInfo((object o) => onPropertyChange(o));
-
-        private bool createdCreateMessage = false;
+        
         private List<Component> toNetworkQueue = new List<Component>();
         private List<Message> myCreateMessages;
         private Vector3 lastPOS;
@@ -243,11 +242,7 @@ namespace Openverse.NetCode
         public void SendtoPlayer(PlayerConnection p)
         {
             isFinished = false;
-            if (!createdCreateMessage)
-            {
-                myCreateMessages = CreateCreateMessages();
-                createdCreateMessage = true;
-            }
+            myCreateMessages = CreateCreateMessages();
             foreach (Message m in myCreateMessages)
             {
                 Metaserver.Instance.server.Send(m, p.Id);
@@ -292,6 +287,8 @@ namespace Openverse.NetCode
             return messages;
         }
 
+        private bool patchingDone = false;
+        
         public Message GetAddCompMessage(Component comp)
         {
             Message addCompMessage = Message.Create(MessageSendMode.reliable, ServerToClientId.addComponent);
@@ -367,7 +364,7 @@ namespace Openverse.NetCode
                         {
                             if (value != null)
                             {
-                                name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "");
+                                name = ((UnityEngine.Object)value).name.Replace(" (Instance)", "").Replace(" Instance","");
                                 bool foundInBundle = false;
                                 foreach (UnityEngine.Object obj in Metaserver.Instance.allAssets)
                                 {
@@ -382,7 +379,7 @@ namespace Openverse.NetCode
                                     addCompMessage.Add(prop.Name);
                                     addCompMessage.Add((ushort)7);
                                     addCompMessage.Add(name);
-                                    PatchProperty(comp, prop);
+                                    if(!patchingDone) PatchProperty(comp, prop);
                                 }
                             }
                         }
@@ -393,11 +390,12 @@ namespace Openverse.NetCode
                     }
                     else
                     {
-                        PatchProperty(comp, prop);
+                        if(!patchingDone) PatchProperty(comp, prop);
                     }
                 }
             }
             addCompMessage.Add(false);
+            patchingDone = true;
             return addCompMessage;
         }
 
