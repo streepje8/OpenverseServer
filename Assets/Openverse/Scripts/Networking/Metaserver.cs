@@ -16,7 +16,7 @@ namespace Openverse.NetCode
         public Server server;
         public WebServer webServer;
         [HideInInspector]public AssetBundle clientAssets;
-        [HideInInspector]public UnityEngine.Object[] allAssets;
+        [HideInInspector]public Object[] allAssets;
 
         public void OnValidate()
         {
@@ -97,6 +97,7 @@ namespace Openverse.NetCode
 
         private void PlayerLeft(object sender, ClientDisconnectedEventArgs e)
         {
+            AudioServer.Instance?.DisconnectAudioClient(e.Id);
             if (PlayerConnection.List.ContainsKey(e.Id))
                 PlayerConnection.List[e.Id].Destroy();
         }

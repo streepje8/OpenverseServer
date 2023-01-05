@@ -10,7 +10,11 @@ namespace Openverse.NetCode
         addComponent,
         removeComponent,
         moveClientMoveable,
-        RequestInput
+        requestInput,
+        createStreamSource,
+        modifyStreamSource,
+        streamAudioData,
+        deleteStreamSource
     }
 
     public enum ClientToServerId : ushort
@@ -19,6 +23,9 @@ namespace Openverse.NetCode
         vrPositions,
         playerReady,
         moveClientMoveable,
-        supplyInput
+        supplyInput,
+        audioClientConnect,
+        audioData,
+        audioClientDisconnect
     }
 }

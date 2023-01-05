@@ -2,8 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Openverse.Data;
 

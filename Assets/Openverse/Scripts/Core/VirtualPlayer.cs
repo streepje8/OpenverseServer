@@ -40,7 +40,7 @@ namespace Openverse.Core
         {
             if (typeToId.TryGetValue(typeof(T), out short value))
             {
-                Message request = Message.Create(MessageSendMode.unreliable, ServerToClientId.RequestInput);
+                Message request = Message.Create(MessageSendMode.unreliable, ServerToClientId.requestInput);
                 request.Add(value);
                 request.Add(name);
                 Tuple<Type, string> packetKey = new Tuple<Type, string>(typeof(T), name);
