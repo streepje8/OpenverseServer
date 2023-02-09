@@ -61,12 +61,11 @@ namespace Openverse.Audio
 
         public void StreamAudio(MetaAudioSource source, AudioClip clip)
         {
-            clip = SetSampleRate(clip, 44100 / 4);
+            clip = SetSampleRate(clip, 11025);
             float[] audioData = new float[clip.samples * clip.channels];
             clip.GetData(audioData, 0);
             byte[] data = new byte[audioData.Length * sizeof(float)];
-            Buffer.BlockCopy(audioData, 0, data, 0, audioData.Length);
-            Debug.Log(data.Length);
+            Buffer.BlockCopy(audioData, 0, data, 0, Buffer.ByteLength(audioData));
             StreamAudio(source, data);
         }
         

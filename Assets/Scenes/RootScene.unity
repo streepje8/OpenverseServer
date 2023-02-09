@@ -399,7 +399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f99b7b44cc10494d99b7f6488da0866, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testClip: {fileID: 8300000, guid: d72b48ac155c0d44f89d76705524b85d, type: 3}
+  testClip: {fileID: 8300000, guid: 5c7b2e8dabfb9674b91672297fdeb583, type: 3}
 --- !u!4 &1857803232
 Transform:
   m_ObjectHideFlags: 0
